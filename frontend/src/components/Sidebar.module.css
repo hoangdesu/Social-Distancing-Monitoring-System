@@ -1,0 +1,28 @@
+.navlink {
+    color: #d1eec0;
+    margin-left: 10px; 
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    list-style: none;
+    text-decoration: none;
+}
+
+.navlink span {
+    margin-left: 7px;
+}
+
+.active {
+    color: #fff;
+    border-radius: 5px;
+    background-color: #1B2B65;
+    transition: background-color 0.15s ease-in;
+}
+
+label {
+    margin: 15px;
+    font-size: 0.7rem;
+    color: #51CBFF;
+}
+
