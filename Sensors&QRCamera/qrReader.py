@@ -6,6 +6,7 @@ import datetime
 import imutils
 import time
 import cv2
+import requests
 
 def qrDectector():
      
@@ -28,6 +29,9 @@ def qrDectector():
     # barcodes found thus far
     csv = open("output.csv", "w")
     found = set()
+    
+    start = time.time()
+    print("start: " , start)
 
     ### Let’s begin capturing + processing frames:
     # loop over the frames from the video stream
@@ -40,6 +44,8 @@ def qrDectector():
      
         # find the barcodes in the frame and decode each of the barcodes
         barcodes = pyzbar.decode(frame)
+        
+        
 
 
     ### Let’s proceed to loop over the detected barcodes
@@ -68,20 +74,33 @@ def qrDectector():
                     barcodeData))
                 csv.flush()
                 found.add(barcodeData)
+                print("{},{}\n".format(datetime.datetime.now(),
+                    barcodeData))
                 qrFlag = True
                 
 
                 # show the output frame
         cv2.imshow("Barcode Scanner", frame)
         key = cv2.waitKey(1) & 0xFF
+        
+        
+        print("timer: ", time.time() - start)
+        
+        if (time.time() - start) > 10.0:
+            cv2.destroyAllWindows()
+            vs.stop()
+            break
      
         if qrFlag is True:
             time.sleep(3.0)
-            break
+            print("[INFO] cleaning up...")
+            # close the output CSV file do a bit of cleanup
+            csv.close()
+            cv2.destroyAllWindows()
+            vs.stop()
+            return ("{},{}\n".format(datetime.datetime.now(),
+                    barcodeData))
 
-    # close the output CSV file do a bit of cleanup
-    print("[INFO] cleaning up...")
-    csv.close()
-    cv2.destroyAllWindows()
-    vs.stop()
+   
+    return None
 
