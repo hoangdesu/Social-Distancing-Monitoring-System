@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { NavLink, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -81,30 +81,56 @@ const Sidebar = (props) => {
     const location = useLocation();
     const [menuItems, setMenuItems] = useState(menuItemsOriginal);
 
+    
+
     props.getTitle(location.pathname);
 
     // const navlinkActiveHandler = (match, location) => {
     //     console.log(location.pathname)
     //     if (location.pathname === item.route) console.log('con')
     // }
+
+
     
     
     // TODO: fix bug icon lag behind!!
     const setActive = () => {
-        setMenuItems(prev => {
-            const newList = prev.map(item => {
-                if (item.route === location.pathname) {
-                    item.activeItem = true;
-                } else {
-                    item.activeItem = false;
-                }
-                console.log(item.title, item.activeItem)
+        // setMenuItems(prev => {
+        //     const newList = prev.map(item => {
+        //         if (item.route === location.pathname) {
+        //             item.activeItem = true;
+        //             console.log(item.title)
+        //         } else {
+        //             item.activeItem = false;
+        //         }
+        //         // console.log(item.title, item.activeItem)
                 
-                return item;
-            })
-            return [...newList];
-        })
+        //         return item;
+        //     })
+        //     return [...newList];
+        // })
     }
+
+    
+
+    //
+    // useEffect(() => {
+    //     setMenuItems(prev => {
+    //         const newList = prev.map(item => {
+    //             if (item.route === location.pathname) {
+    //                 item.activeItem = true;
+    //                 console.log(item.title)
+    //             } else {
+    //                 item.activeItem = false;
+    //             }
+    //             // console.log(item.title, item.activeItem)
+    //
+    //             return item;
+    //         })
+    //         return [...newList];
+    //     })
+    // }, []);
+
 
     return (
         <Container>
