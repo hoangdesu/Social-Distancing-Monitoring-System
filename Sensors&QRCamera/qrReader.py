@@ -7,9 +7,9 @@ import imutils
 import time
 import cv2
 import requests
+#import peopleInRoom
 
 def qrDectector():
-     
     # construct the argument parser and parse the arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-o", "--output", type=str, default="barcodes.csv",
@@ -86,7 +86,7 @@ def qrDectector():
         
         print("timer: ", time.time() - start)
         
-        if (time.time() - start) > 10.0:
+        if (time.time() - start) > 30.0:
             cv2.destroyAllWindows()
             vs.stop()
             break

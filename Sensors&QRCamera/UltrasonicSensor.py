@@ -3,10 +3,15 @@ from qrReader import *
 import time
 import seeed_dht
 from grove.grove_moisture_sensor import GroveMoistureSensor
+import sys
+#sys.path.append(".")
+from MiniPIR import GroveMiniPIRMotionSensor
+#import peopleInRoom
 
 GPIO_SIG = 12
 #LED = 15
 entrance = 0
+  
 
 def getAndPrint():
 
@@ -14,12 +19,15 @@ def getAndPrint():
 
     # test 100 times
     for i in range(10000):
-        measurementInCM()
+        miniPir() #this function is called first
+        #measurementInCM()
         
     
 
     # Reset GPIO settings
     GPIO.cleanup()
+    
+    
     
 def air():
  
@@ -36,6 +44,22 @@ def air():
     else:
         print('humidity & temperature: {}'.format(temp))
         time.sleep(2)
+        
+def miniPir():
+    pir = GroveMiniPIRMotionSensor(22)
+
+    def callback():
+        print("The number of people who passed this area: {}".format(pir.count))
+    
+    pir.on_detect = callback
+    
+    while True:
+        try:
+            measurementInCM() # this function is called after the miniPir function is called
+            time.sleep(0.5)
+        finally:
+            GPIO.cleanup
+        
 
 def measurementInCM():
 
@@ -79,6 +103,7 @@ def measurementPulse(start, stop):
 
     print("Distance : {:10.2f} CM".format(distance))
     air()
+    
     if distance <= 15:
         #GPIO.output(LED, GPIO.HIGH)
         entrance = 1

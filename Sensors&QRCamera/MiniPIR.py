@@ -25,17 +25,15 @@ class GroveMiniPIRMotionSensor(GPIO):
 
     def _handle_event(self, pin, value):
         if value:
+            self.count = self.count + 1
             if callable(self._on_detect):
                 self._on_detect()
-                self.count = self.count + 1
 
 
-Grove = GroveMiniPIRMotionSensor
 
 
 def main():
-    import sys
-    pir = GroveMiniPIRMotionSensor(23)
+    pir = GroveMiniPIRMotionSensor(22)
 
     def callback():
         print("The number of people who passed this area: {}".format(pir.count))
@@ -46,5 +44,5 @@ def main():
         time.sleep(0.1)
 
 
-if __name__ == '__main__':
-    main()
+#if __name__ == '__main__':
+#   main()
