@@ -7,7 +7,7 @@ import imutils
 import time
 import cv2
 import requests
-#import peopleInRoom
+import peopleInRoom
 
 def qrDectector():
     # construct the argument parser and parse the arguments
@@ -86,12 +86,14 @@ def qrDectector():
         
         print("timer: ", time.time() - start)
         
-        if (time.time() - start) > 30.0:
+        if (time.time() - start) > 10.0:
             cv2.destroyAllWindows()
             vs.stop()
             break
      
         if qrFlag is True:
+            peopleInRoom.pp = peopleInRoom.pp + 1
+            peopleInRoom.leavingDect = 0
             time.sleep(3.0)
             print("[INFO] cleaning up...")
             # close the output CSV file do a bit of cleanup

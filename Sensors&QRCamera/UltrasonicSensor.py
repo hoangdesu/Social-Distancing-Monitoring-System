@@ -6,7 +6,7 @@ from grove.grove_moisture_sensor import GroveMoistureSensor
 import sys
 #sys.path.append(".")
 from MiniPIR import GroveMiniPIRMotionSensor
-#import peopleInRoom
+import peopleInRoom
 
 GPIO_SIG = 12
 #LED = 15
@@ -36,7 +36,7 @@ def air():
     sensor = seeed_dht.DHT("11",5)
     sensor2 = GroveMoistureSensor(PIN)
     
-    print('Detecting enviroment detail...')
+    #print('Detecting enviroment detail...')
     humi, temp = sensor.read()
     m = sensor2.moisture
     if not humi or not m is None:
@@ -89,7 +89,7 @@ def measurementInCM():
 
 def measurementPulse(start, stop):
 
-    print("Ultrasonic Measurement")
+    #print("Ultrasonic Measurement")
 
     # Calculate pulse length
     elapsed = stop-start
@@ -107,11 +107,33 @@ def measurementPulse(start, stop):
     if distance <= 15:
         #GPIO.output(LED, GPIO.HIGH)
         entrance = 1
+    elif distance > 15 and distance < 55:
+        #if people passing through the ultrasonic
+        entrance = 0
+        peopleInRoom.leavingDect = 1
     else:
         #GPIO.output(LED, GPIO.LOW)
         entrance = 0
+
+#     if distance <= 35:
+#         entrance = 0
+#         start = time.time()
+#         while True:
+#             if (time.time() - start) > 3.5:
+#                 if distance <= 35:
+#                     entrance = 1
+#                     break
+#                 else:
+#                     leavingDect = 1
+#                     break
+#             else:
+#                 elapsed = stop-start
+#                 distance = elapsed * 34300
+#                 distance = distance / 2
+#     else:
+#         entrance = 0
     
     if entrance is 1:
         print("entry detected")
         qrDectector()
-        
+        print("Number of people in the room: {}".format(peopleInRoom.pp))
