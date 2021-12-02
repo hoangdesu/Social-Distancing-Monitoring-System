@@ -1,5 +1,6 @@
 import time
 from grove.gpio import GPIO
+import peopleInRoom
 
 
 class GroveMiniPIRMotionSensor(GPIO):
@@ -26,8 +27,13 @@ class GroveMiniPIRMotionSensor(GPIO):
     def _handle_event(self, pin, value):
         if value:
             self.count = self.count + 1
+            if peopleInRoom.leavingDect is 1:
+                peopleInRoom.pp = peopleInRoom.pp - 1
+                peopleInRoom.leavingDect = 0
+                print("Number of people in the room: {}".format(peopleInRoom.pp))
             if callable(self._on_detect):
                 self._on_detect()
+                
 
 
 

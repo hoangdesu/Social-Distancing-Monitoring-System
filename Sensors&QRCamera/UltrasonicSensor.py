@@ -3,13 +3,11 @@ from qrReader import *
 import time
 import seeed_dht
 from grove.grove_moisture_sensor import GroveMoistureSensor
-import sys
-#sys.path.append(".")
 from MiniPIR import GroveMiniPIRMotionSensor
-#import peopleInRoom
+import peopleInRoom
 
-GPIO_SIG = 12
-#LED = 15
+Buzzer_sig = 12
+GPIO_SIG = 5
 entrance = 0
   
 
@@ -17,7 +15,7 @@ def getAndPrint():
 
     print("SeeedStudio Grove Ultrasonic get data and print")
 
-    # test 100 times
+    # loop basically forever, until keyboardInterrupt Ctrl + C
     for i in range(10000):
         miniPir() #this function is called first
         #measurementInCM()
@@ -33,10 +31,10 @@ def air():
  
     # for DHT11/DHT22
     PIN = 0
-    sensor = seeed_dht.DHT("11",5)
+    sensor = seeed_dht.DHT("11",16)
     sensor2 = GroveMoistureSensor(PIN)
     
-    print('Detecting enviroment detail...')
+    #print('Detecting enviroment detail...')
     humi, temp = sensor.read()
     m = sensor2.moisture
     if not humi or not m is None:
@@ -60,6 +58,22 @@ def miniPir():
         finally:
             GPIO.cleanup
         
+
+def smallBuzzing(): # Sound of buzzer when the number of people does not exceed 5 
+    GPIO.setup(Buzzer_sig, GPIO.OUT)
+    GPIO.output(Buzzer_sig, GPIO.HIGH)
+    time.sleep(0.2)
+    GPIO.output(Buzzer_sig, GPIO.LOW)
+    
+def loudBuzzing(): # The sound of buzzer becomes loud and irritating when number of people exceed 5
+    GPIO.setup(Buzzer_sig, GPIO.OUT)
+    GPIO.output(Buzzer_sig, GPIO.HIGH)
+    time.sleep(1.5)
+    GPIO.output(Buzzer_sig, GPIO.LOW)
+    time.sleep(0.5)
+    GPIO.output(Buzzer_sig, GPIO.HIGH)
+    time.sleep(1.5)
+    GPIO.output(Buzzer_sig, GPIO.LOW)
 
 def measurementInCM():
 
@@ -89,7 +103,7 @@ def measurementInCM():
 
 def measurementPulse(start, stop):
 
-    print("Ultrasonic Measurement")
+    #print("Ultrasonic Measurement")
 
     # Calculate pulse length
     elapsed = stop-start
@@ -105,13 +119,16 @@ def measurementPulse(start, stop):
     air()
     
     if distance <= 15:
-        #GPIO.output(LED, GPIO.HIGH)
+        #if a person wants to check QR Code
         entrance = 1
+    elif distance > 15 and distance < 55:
+        #if people passing through the ultrasonic and is leaving 
+        entrance = 0
+        peopleInRoom.leavingDect = 1
     else:
-        #GPIO.output(LED, GPIO.LOW)
         entrance = 0
     
     if entrance is 1:
         print("entry detected")
         qrDectector()
-        
+        print("Number of people in the room: {}".format(peopleInRoom.pp))

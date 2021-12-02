@@ -7,7 +7,10 @@ import imutils
 import time
 import cv2
 import requests
-#import peopleInRoom
+import peopleInRoom
+import seeed_dht
+from grove.display import JHD1802
+import UltrasonicSensor
 
 def qrDectector():
     # construct the argument parser and parse the arguments
@@ -27,8 +30,13 @@ def qrDectector():
      
     # open the output CSV file for writing and initialize the set of
     # barcodes found thus far
-    csv = open("output.csv", "w")
+    csv = open("output.csv", "r+")
     found = set()
+    
+    lcd = JHD1802()
+    lcd.setCursor(0, 0)
+     
+ 
     
     start = time.time()
     print("start: " , start)
@@ -69,15 +77,40 @@ def qrDectector():
      
             # if the barcode text is currently not in our CSV file, write
             # the timestamp + barcode to disk and update the set
-            if barcodeData not in found:
-                csv.write("{},{}\n".format(datetime.datetime.now(),
-                    barcodeData))
+        
+            if barcodeData in csv.read():
+                if peopleInRoom.pp <= 5: # If QR Code is valid and there are still rooms for more
+                    peopleInRoom.pp = peopleInRoom.pp + 1
+                    lcd.setCursor(0,0)
+                    lcd.write('Welcome to the')
+                    lcd.setCursor(0,1)
+                    lcd.write('room!')
+                    UltrasonicSensor.smallBuzzing() # Buzz small and cool
+                    print("Welcome!")
+                    qrFlag = True
+                else: # Signal the room is currently full
+                    lcd.setCursor(0,0)
+                    lcd.write('Sorry, the room')
+                    lcd.setCursor(0,1)
+                    lcd.write('is full!')
+                    print("Over 5 people in the room")
+                    UltrasonicSensor.loudBuzzing() # Buzz loud and clear
+                    qrFlag = True
+            else: #If Invalid QR Code is scanned
+                """
+                csv.write("{}\n".format(barcodeData))
                 csv.flush()
                 found.add(barcodeData)
-                print("{},{}\n".format(datetime.datetime.now(),
-                    barcodeData))
+                print("{}\n".format(barcodeData))
+                    
+                """
+                UltrasonicSensor.smallBuzzing() # Buzz small and cool
+                lcd.setCursor(0, 0)
+                lcd.write('QR code is not')
+                lcd.setCursor(1, 0)
+                lcd.write('in the database')
+                print("QR code is not in the database")
                 qrFlag = True
-                
 
                 # show the output frame
         cv2.imshow("Barcode Scanner", frame)
@@ -86,12 +119,13 @@ def qrDectector():
         
         print("timer: ", time.time() - start)
         
-        if (time.time() - start) > 30.0:
+        if (time.time() - start) > 15.0:
             cv2.destroyAllWindows()
             vs.stop()
             break
      
         if qrFlag is True:
+            peopleInRoom.leavingDect = 0
             time.sleep(3.0)
             print("[INFO] cleaning up...")
             # close the output CSV file do a bit of cleanup

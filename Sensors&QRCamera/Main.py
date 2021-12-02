@@ -1,4 +1,4 @@
-from qrReader import *
+#from qrReader import *
 from UltrasonicSensor import *
 from environment import *
 #from MiniPIR import *
