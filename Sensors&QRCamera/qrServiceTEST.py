@@ -1,0 +1,5 @@
+import socket
+
+str = getImage()
+
+
