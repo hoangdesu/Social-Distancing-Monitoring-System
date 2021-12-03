@@ -5,14 +5,26 @@ import seeed_dht
 from grove.grove_moisture_sensor import GroveMoistureSensor
 from MiniPIR import GroveMiniPIRMotionSensor
 import peopleInRoom
+import socket
 
-Buzzer_sig = 12
-GPIO_SIG = 5
+# CONST
+Buzzer_sig = 12 #Buzzer PIN
+GPIO_SIG = 5 # Ultrasonic PIN
 entrance = 0
-  
+
+
+# Socket configurations
+HOST = '192.168.0.105'  
+PORT = 4000
+s = socket.socket()
+host = socket.gethostname()
+
 
 def getAndPrint():
-
+    # Connection setup
+    
+    s.connect((HOST, 4000)) 
+    
     print("SeeedStudio Grove Ultrasonic get data and print")
 
     # loop basically forever, until keyboardInterrupt Ctrl + C
@@ -20,18 +32,17 @@ def getAndPrint():
         miniPir() #this function is called first
         #measurementInCM()
         
-    
 
     # Reset GPIO settings
     GPIO.cleanup()
     
     
-    
 def air():
- 
+    
+     
     # for DHT11/DHT22
-    PIN = 0
-    sensor = seeed_dht.DHT("11",16)
+    PIN = 0 #Moisture sensor PIN
+    sensor = seeed_dht.DHT("11",16) # Temperature and humidity sensor
     sensor2 = GroveMoistureSensor(PIN)
     
     #print('Detecting enviroment detail...')
@@ -39,12 +50,14 @@ def air():
     m = sensor2.moisture
     if not humi or not m is None:
         print('humidity: {}%, temperature: {} C, moisture: {}'.format(humi, temp, m))
+        s.sendall(bytes('humidity {} celcius {} moisture {}'.format(humi, temp, m), "utf8"))
+        #s.sendall(bytes('Hello from Pi, collecting data!', "utf8"))
     else:
         print('humidity & temperature: {}'.format(temp))
         time.sleep(2)
         
 def miniPir():
-    pir = GroveMiniPIRMotionSensor(22)
+    pir = GroveMiniPIRMotionSensor(22) #Mini PIR Motion
 
     def callback():
         print("The number of people who passed this area: {}".format(pir.count))
@@ -130,5 +143,7 @@ def measurementPulse(start, stop):
     
     if entrance is 1:
         print("entry detected")
-        qrDectector()
+        numPeople = peopleInRoom.pp
+        qrDectector(numPeople)
         print("Number of people in the room: {}".format(peopleInRoom.pp))
+

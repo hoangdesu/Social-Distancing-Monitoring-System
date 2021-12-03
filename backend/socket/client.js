@@ -1,24 +1,41 @@
-const { io } = require("socket.io-client");
-const fs = require('fs')
+const { io } = require('socket.io-client');
 
-const socket = io('http://10.247.213.10:3001');
+// const HOST = 'http://192.168.137.236:3001';
+const HOST = 'http://localhost:3001';
+const socket = io(HOST);
 
-console.log("Client working");
+console.log('[CLIENT STARTING...]');
 
-socket.on("connect", () => {
-    console.log(socket.id); // x8WIv7-mJelg7on_ALbx
-  });
+socket.on('connect', () => {
+	console.log(socket.id);
+});
 
-  socket.on("hello", (arg) => {
-    console.log(arg); // world
-  });
+const http = require('http')
+const options = {
+  hostname: 'localhost',
+  port: 3000,
+  path: '/users/all',
+  method: 'GET'
+}
 
-let counter = 0;
 setInterval(() => {
-  // socket.emit('client', "Hi from client!")
-  let data = ++counter;
-  console.log("hi - ", );
-  // const data = fs.readFileSync('img64.txt', 'utf8')
-  console.log(data)
-  socket.emit('client-hi', data)
-}, 100);
+	// let msg = 'Deep Deep Dark Fantasy';
+	// socket.emit('client-hi', msg);
+	// console.log(msg);
+
+	const req = http.request(options, res => {
+		console.log(`statusCode: ${res.statusCode}`)
+	  
+		res.on('data', d => {
+		  process.stdout.write(d)
+		})
+	  })
+	  
+	  req.on('error', error => {
+		console.error(error)
+	  })
+	  
+	  req.end()
+}, 10000);
+
+

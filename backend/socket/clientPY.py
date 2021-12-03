@@ -2,6 +2,9 @@
 
 import socket 
 
+HOST = '127.0.0.1'  
+PORT = 8000    
+
 # Như mình đã nói ở trên thì chúng ta không truyền tham số vào vẫn ok
 s = socket.socket()
 host = socket.gethostname()
