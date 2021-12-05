@@ -12,7 +12,9 @@ import seeed_dht
 from grove.display import JHD1802
 import UltrasonicSensor
 
-def qrDectector():
+def qrDectector(value):
+    numPeople = value
+    print("Num People: {}".format(numPeople))
     # construct the argument parser and parse the arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-o", "--output", type=str, default="barcodes.csv",
@@ -26,21 +28,21 @@ def qrDectector():
     vs = VideoStream(src=0).start()                 
     time.sleep(2.0)
 
-    qrFlag = False 
+    qrFlag = False
+    legitFlag = False
      
     # open the output CSV file for writing and initialize the set of
     # barcodes found thus far
-    csv = open("output.csv", "r+")
+    csv = open("users.csv", "r+")
     found = set()
     
     lcd = JHD1802()
     lcd.setCursor(0, 0)
+    print(csv)
      
- 
-    
     start = time.time()
     print("start: " , start)
-
+    
     ### Let’s begin capturing + processing frames:
     # loop over the frames from the video stream
     while True:
@@ -52,9 +54,7 @@ def qrDectector():
      
         # find the barcodes in the frame and decode each of the barcodes
         barcodes = pyzbar.decode(frame)
-        
-        
-
+    
 
     ### Let’s proceed to loop over the detected barcodes
     # loop over the detected barcodes
@@ -77,21 +77,24 @@ def qrDectector():
      
             # if the barcode text is currently not in our CSV file, write
             # the timestamp + barcode to disk and update the set
-        
+            
+            #if 's3755614,Tran Kim Long,0797999956' in csv.read():
             if barcodeData in csv.read():
-                if peopleInRoom.pp <= 5: # If QR Code is valid and there are still rooms for more
+                print("Users Get Successfully")
+                if numPeople < 5: # If QR Code is valid and there are still rooms for more
                     peopleInRoom.pp = peopleInRoom.pp + 1
                     lcd.setCursor(0,0)
                     lcd.write('Welcome to the')
-                    lcd.setCursor(0,1)
-                    lcd.write('room!')
+                    lcd.setCursor(1,0)
+                    lcd.write('room, bitches!')
                     UltrasonicSensor.smallBuzzing() # Buzz small and cool
                     print("Welcome!")
+                    legitFlag = True
                     qrFlag = True
-                else: # Signal the room is currently full
+                else:# Signal the room is currently full
                     lcd.setCursor(0,0)
                     lcd.write('Sorry, the room')
-                    lcd.setCursor(0,1)
+                    lcd.setCursor(1,0)
                     lcd.write('is full!')
                     print("Over 5 people in the room")
                     UltrasonicSensor.loudBuzzing() # Buzz loud and clear
@@ -132,9 +135,10 @@ def qrDectector():
             csv.close()
             cv2.destroyAllWindows()
             vs.stop()
-            return ("{},{}\n".format(datetime.datetime.now(),
-                    barcodeData))
+            if legitFlag is True:
+                return ("LegitBarcode:{}:{}:\n".format(barcodeData, peopleInRoom.pp))
+            else:
+                return ("{},{}\n".format(datetime.datetime.now(),barcodeData))
 
-   
     return None
 

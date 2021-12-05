@@ -11,10 +11,6 @@ if __name__ == '__main__':
     GPIO.setup(5, GPIO.IN)
     GPIO.setup(0, GPIO.IN)
     # loop method
+    
     getAndPrint()
-        
-
-
-    
-    
     

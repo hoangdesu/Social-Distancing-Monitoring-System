@@ -10,7 +10,7 @@ print(host)
 port = 4000
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((host, port))
-url = "http://localhost:3000/measurements/"
+url = "http://localhost:3000/"
 
 
 s.listen(1)
@@ -26,7 +26,7 @@ try:
         if (str_data == 'quit'):
             break
 
-        if (str_data != ''):
+        if ("measurements" in str_data):
             x = str_data.split()
             #print(x)
             #sample output ['humidity', '42,', 'celcius', '35,', 'moisture', '0']
@@ -35,7 +35,28 @@ try:
                 x[2]: float(x[3]),
                 x[4]: float(x[5])
             }
-            z = requests.post(url, json = data)
+            measure = url + 'measurements/'
+            z = requests.post(url = measure, json = data)
+            #print(z)
+
+        if (str_data == "getUsers"):
+            users = url + 'users/all/'
+            r = requests.get(url = users)
+            data = r.text
+            c.sendall(data.encode("utf8"))
+
+        if ("LegitBarcode" in str_data):
+            # Get data from output string
+            x = str_data.split(":")
+            # Get id from data
+            x1 = x[1].split(",")
+            data = json={
+                "entry_number": int(x[2]),
+                "entry_id": x1[0]
+            }
+            print(data)
+            entry = url + 'entry/'
+            z = requests.post(url = entry, json = data)
             print(z)
 finally:
     c.close()

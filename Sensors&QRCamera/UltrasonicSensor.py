@@ -6,24 +6,27 @@ from grove.grove_moisture_sensor import GroveMoistureSensor
 from MiniPIR import GroveMiniPIRMotionSensor
 import peopleInRoom
 import socket
+import csv
+import json
+import unicodedata
 
 # CONST
 Buzzer_sig = 12 #Buzzer PIN
 GPIO_SIG = 5 # Ultrasonic PIN
 entrance = 0
 
-
 # Socket configurations
 HOST = '192.168.0.105'  
 PORT = 4000
 s = socket.socket()
 host = socket.gethostname()
-
+users = None
 
 def getAndPrint():
     # Connection setup
     
-    s.connect((HOST, 4000)) 
+    s.connect((HOST, 4000))
+
     
     print("SeeedStudio Grove Ultrasonic get data and print")
 
@@ -50,7 +53,7 @@ def air():
     m = sensor2.moisture
     if not humi or not m is None:
         print('humidity: {}%, temperature: {} C, moisture: {}'.format(humi, temp, m))
-        s.sendall(bytes('humidity {} celcius {} moisture {}'.format(humi, temp, m), "utf8"))
+        s.sendall(bytes('humidity {} celcius {} moisture {} measurements'.format(humi, temp, m), "utf8"))
         #s.sendall(bytes('Hello from Pi, collecting data!', "utf8"))
     else:
         print('humidity & temperature: {}'.format(temp))
@@ -113,6 +116,20 @@ def measurementInCM():
 
     measurementPulse(start, stop)
 
+def getUserList():
+    # Calling Socket 
+    s.sendall(bytes('getUsers', "utf8"))
+    data = s.recv(1024)
+    #print("data: {}".format(data))
+    users = data.decode("utf8")
+    y = json.loads(users)
+    with open('users.csv', 'w', newline='', encoding='UTF8') as f:
+        # create the csv writer
+        writer = csv.writer(f)
+        for user in y:
+            info = [user["student_id"], user["name"], user["phone_number"]]
+            print(info)
+            writer.writerow(info) 
 
 def measurementPulse(start, stop):
 
@@ -144,6 +161,11 @@ def measurementPulse(start, stop):
     if entrance is 1:
         print("entry detected")
         numPeople = peopleInRoom.pp
-        qrDectector(numPeople)
+        if (users == None):
+            getUserList()
+        barcodeData = qrDectector(numPeople)
+        if (barcodeData != None):
+            if ("LegitBarcode" in barcodeData):
+                print(barcodeData)
+                s.sendall(bytes('{}'.format(barcodeData), "utf8"))
         print("Number of people in the room: {}".format(peopleInRoom.pp))
-
