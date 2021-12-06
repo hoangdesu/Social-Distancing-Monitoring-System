@@ -10,3 +10,10 @@ Note: run `npm i yarn` if you haven't had yarn.
 Running:
 	- Frontend: run `yarn start`
 	- Backend: run `yarn run server`
+
+
+Motion Sensor - D22
+Buzzer - D12
+Moisture - A0
+Humid and Temp - D16
+Ultrasonic - D5
