@@ -16,15 +16,8 @@ const Live = () => {
     return (
         <div>
             CAM1
-            <Webcam
-                audio={false}
-                height={360}
-                ref={webcamRef}
-                screenshotFormat="image/jpeg"
-                width={360}
-                videoConstraints={videoConstraints}
-            />
-            CAM2
+            <img src="http://192.168.1.6:8000/video_feed" alt="" />
+            {/* CAM2
             <Webcam
                 audio={false}
                 height={360}
@@ -69,8 +62,8 @@ const Live = () => {
                 screenshotFormat="image/jpeg"
                 width={360}
                 videoConstraints={videoConstraints}
-            />
-        <button onClick={capture}>Capture</button>
+            /> */}
+        {/* <button onClick={capture}>Capture</button> */}
         </div>
     );
 };
