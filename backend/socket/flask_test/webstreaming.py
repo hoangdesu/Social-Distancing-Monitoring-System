@@ -9,6 +9,8 @@ import imutils
 import time
 import cv2
 from flask_cors import CORS, cross_origin
+from flask_socketio import SocketIO
+import base64
 
 # initialize the output frame and a lock used to ensure thread-safe
 # exchanges of the output frames (useful when multiple browsers/tabs
@@ -19,6 +21,8 @@ lock = threading.Lock()
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+socketio = SocketIO(app, cors_allowed_origins="*")
+
 # initialize the video stream and allow the camera sensor to
 # warmup
 #vs = VideoStream(usePiCamera=1).start()
@@ -124,6 +128,47 @@ def test():
     # 	yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
     # 		bytearray(encodedImage) + b'\r\n')
      
+     
+def testingVideoStreamService():
+    global vs, lock
+
+    while True:
+        with lock:
+            # vs = VideoStream(src=0).start() # SOMETHING WRONG HERE!!!!
+            time.sleep(1/5)
+            frame = vs.read()
+            
+            if frame is None: 
+                continue
+            #         <your code/do something with frame>
+            # if cv2.waitKey(1) & 0xFF == ord('q'): #exit if q-key pressed
+            #         break #break safely
+            
+            k = cv2.waitKey(30) & 0xff
+            if k == 27:  # press 'ESC' to quit
+                break
+            
+            frame = imutils.resize(frame, width=500)
+            timestamp = datetime.datetime.now()
+            cv2.putText(frame, timestamp.strftime(
+                "%A %d %B %Y %I:%M:%S%p"), (10, frame.shape[0] - 10),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            
+            (flag, encodedImage) = cv2.imencode(".jpg", frame)
+            # if not flag:
+            #     continue 
+            
+            jpg_as_text = base64.b64encode(encodedImage)
+            b64_str = jpg_as_text.decode()
+            
+            cv2.imshow("Barcode Scanner", frame)
+            key = cv2.waitKey(1) & 0xFF
+            
+            socketio.emit('video-stream', b64_str)
+            print("Video frame sent!")
+    cv2.destroyAllWindows()
+    vs.stop()
 
 # check to see if this is the main thread of execution
 if __name__ == '__main__':
@@ -136,20 +181,28 @@ if __name__ == '__main__':
     ap.add_argument("-f", "--frame-count", type=int, default=32,
         help="# of frames used to construct the background model")
     args = vars(ap.parse_args())
+    
     # start a thread that will perform motion detection
-    t = threading.Thread(target=detect_motion, args=(
-        args["frame_count"],))
-    # t = threading.Thread(target=detect_motion)
+    # t = threading.Thread(target=detect_motion, args=(
+    #     args["frame_count"],))
+    
+    t = threading.Thread(target=testingVideoStreamService)
     t.daemon = True
     t.start()
+    
     # start the flask app
     app.run(host=args["ip"], port=args["port"], debug=True,
         threaded=True, use_reloader=False)
+    
+    # socketio.run(app, host='0.0.0.0', port=5000)
+    
 # release the video stream pointer
 vs.stop()
 
+# testingVideoStreamService
+
 
 # NOTES:
-#     - Command to run: py webstreaming.py  --ip 0.0.0.0 --port 8000
+#     - Command to run: py webstreaming.py  --ip 0.0.0.0 --port 5000
 #     (can enforce host + port later)
 #     - point the <img src"...""> to video_feed URL

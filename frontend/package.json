@@ -12,6 +12,8 @@
     "react-router-dom": "5",
     "react-scripts": "4.0.3",
     "react-webcam": "^6.0.0",
+    "socket.io": "^4.4.0",
+    "socket.io-client": "^4.4.0",
     "styled-components": "^5.3.3",
     "web-vitals": "^1.0.1"
   },
