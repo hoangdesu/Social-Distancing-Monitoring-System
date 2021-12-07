@@ -62,10 +62,12 @@ const Live = () => {
 
     return (
         <div>
-            <h1>QR Reader</h1>
             {/* <img src="http://192.168.1.6:8000/video_feed" alt="" /> */}
+            <div style={{ margin: 20 }}>
+            <h1 style={{ paddingLeft: 20 }}>QR Reader</h1>
             {videoSrc}
-            <button onClick={refetchVideo}>Refetch video</button>
+            </div>
+            {/* <button onClick={refetchVideo}>Refetch video</button> */}
             {/* CAM2
             <Webcam
                 audio={false}
