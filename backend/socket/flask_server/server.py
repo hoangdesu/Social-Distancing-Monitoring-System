@@ -23,9 +23,9 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-lock = threading.Lock()
+# lock = threading.Lock()
 
-vs = VideoStream(src=0).start() # SOMETHING WRONG HERE!!!!
+# vs = VideoStream(src=0).start() # SOMETHING WRONG HERE!!!!
 # vs.stream.release()
 time.sleep(2.0)
 
@@ -60,39 +60,39 @@ def testingVideoStreamService():
     global vs, lock
 
     while True:
-        with lock:
+        # with lock:
             # vs = VideoStream(src=0).start() # SOMETHING WRONG HERE!!!!
-            time.sleep(1/5)
-            frame = vs.read()
-            
-            if frame is None: 
-                continue
-            # if cv2.waitKey(1) & 0xFF == ord('q'): #exit if q-key pressed
-            #         break #break safely
-            
-            # k = cv2.waitKey(30) & 0xff
-            # if k == 27:  # press 'ESC' to quit
-            #     break
-            
-            frame = imutils.resize(frame, width=500)
-            timestamp = datetime.datetime.now()
-            cv2.putText(frame, timestamp.strftime(
-                "%A %d %B %Y %I:%M:%S%p"), (10, frame.shape[0] - 10),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            
-            (flag, encodedImage) = cv2.imencode(".jpg", frame)
-            # if not flag:
-            #     continue 
-            
-            jpg_as_text = base64.b64encode(encodedImage)
-            b64_str = jpg_as_text.decode()
-            
-            cv2.imshow("Barcode Scanner", frame)
-            key = cv2.waitKey(1) & 0xFF
-            
-            socketio.emit('video-stream', b64_str)
-            print("Video frame sent!")
+        time.sleep(1/5)
+        frame = vs.read()
+        
+        if frame is None: 
+            continue
+        # if cv2.waitKey(1) & 0xFF == ord('q'): #exit if q-key pressed
+        #         break #break safely
+        
+        # k = cv2.waitKey(30) & 0xff
+        if cv2.waitKey(30) & 0xff == 27:  # press 'ESC' to quit
+            break
+        
+        frame = imutils.resize(frame, width=500)
+        timestamp = datetime.datetime.now()
+        cv2.putText(frame, timestamp.strftime(
+            "%A %d %B %Y %I:%M:%S%p"), (10, frame.shape[0] - 10),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        
+        (flag, encodedImage) = cv2.imencode(".jpg", frame)
+        # if not flag:
+        #     continue 
+        
+        jpg_as_text = base64.b64encode(encodedImage)
+        b64_str = jpg_as_text.decode()
+        
+        cv2.imshow("Barcode Scanner", frame)
+        key = cv2.waitKey(1) & 0xFF
+        
+        socketio.emit('video-stream', b64_str)
+        print("Video frame sent!")
     cv2.destroyAllWindows()
     vs.stop()
 
@@ -169,13 +169,13 @@ def get_some_data():
 
 if __name__ == '__main__':
     # default: basic counter
-    t = threading.Thread(target=produce_chart_data)
+    # t = threading.Thread(target=produce_chart_data)
     # t.start()
     
-    # video stream service
-    t2 = threading.Thread(target=testingVideoStreamService)
-    t2.daemon = True
-    t2.start()
+    # # video stream service
+    # t2 = threading.Thread(target=testingVideoStreamService)
+    # t2.daemon = True
+    # t2.start()
     
 
     # PORT = json.load(open('config.json'))["PORT"]

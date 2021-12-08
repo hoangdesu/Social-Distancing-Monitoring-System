@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import styled from 'styled-components';
 
@@ -14,16 +14,17 @@ const Container = styled.div`
     margin-bottom: 10px;
 `;
 
-const NavBar = (props) => {
-    const locations = {
-        '/': 'Dashboard',
-        '/dashboard': 'Dashboard',
-        '/about': 'About',
-        '/live': 'Live',
-        '/analytics': 'Analytics',
-        '/settings': 'Settings'
-    }
+const locations = {
+    '/': 'Dashboard',
+    '/dashboard': 'Dashboard',
+    '/about': 'About',
+    '/live': 'Live',
+    '/analytics': 'Analytics',
+    '/settings': 'Settings'
+}
 
+const NavBar = (props) => {
+    
     return (
         <Container>
             <h1>{locations[props.title]}</h1>

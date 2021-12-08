@@ -56,7 +56,7 @@ const Live = () => {
     // TESTING SOCKET IO
     useEffect(() => {
 
-        const socket = io('http://127.0.0.1:5000/');
+        const socket = io('http://192.168.137.51:5000/');
         console.log(socket);
 
         socket.on("connect", data => {
@@ -120,7 +120,7 @@ const Live = () => {
             {/* <img src="http://192.168.1.6:8000/video_feed" alt="" /> */}
             <div style={{ margin: 20 }}>
             <h1 style={{ paddingLeft: 20 }}>QR Reader</h1>
-            {/* {videoSrc} */}
+            {videoSrc}
             
             </div>
 
