@@ -1,0 +1,100 @@
+/* body {
+    background: url('background.jpg') center no-repeat;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background-size: cover;
+} */
+
+.login-form {
+    /* position: absolute;
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%, -50%); */
+    /* height: 50vh; */
+    margin: 10px;
+    min-height: fit-content;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    width: 400px;
+    padding: 40px;
+    background: rgb(0,0,0,0.7);
+    box-sizing: border-box;
+    box-shadow: 0 15px 40px rgb(0,0,0,0.8);
+    border-radius: 10px;
+    font-family: 'Roboto', sans-serif;
+    /* background-image: url('../assets/admin_background.jpeg'); */
+}
+
+.login-form h2 {
+    padding: 0 0 30px;
+    margin: 0;
+    color: white;
+    text-align: center;
+}
+
+.input-box {
+    position: relative;
+}
+
+.input-box input {
+    font-size: 18px;
+    width: 100%;
+    padding: 10px 0;
+    margin-bottom: 30px;
+    border: none;
+    border-bottom: 1px solid white;
+    outline: none;
+    color: white;
+    background: transparent;
+}
+
+.login-form .input-box label {
+    position: absolute;
+    top: -15px;
+    left: -14px;
+    margin-bottom: 30px;
+    color: white;
+    padding: 10px 0;
+    transition: .5s ease;
+    pointer-events: none;
+}
+
+.login-form .input-box input:focus ~ label,
+.login-form .input-box input:valid ~ label {
+    top: -40px;
+    left: -15px;
+    font-size: 12px;
+    color: #C184EA;
+}
+
+.login-form input[type="submit"], button {
+    margin: 0 0 20px 0;
+    border: none;
+    outline: none;
+    color: white;
+    background: #C184EA;
+    font-size: 18px;
+    padding: 8px 20px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.footer {
+    position: absolute; 
+    bottom: 0;
+    color: white;
+    margin: 20px;
+    font-size: 1rem;
+    font-family: monospace;
+}
+
+#info {
+    text-decoration: none;
+    color: white;
+}
+
+#info:hover {
+    text-decoration: underline;
+}
