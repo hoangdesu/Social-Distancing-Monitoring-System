@@ -16,7 +16,8 @@ const AppContainer = styled.div`
 `;
 
 const Content = styled.div`
-    background-color: #f8f9ff;
+    background-color: #F8F9Ff;
+    // background-color: #edeff7;
     width: 100%;
     overflow: scroll;
     // CAM6
@@ -75,7 +76,6 @@ function App() {
                             </Route>
                         </Switch>
                     </Content>
-                    
                 </AppContainer>
             )}
         </Router>

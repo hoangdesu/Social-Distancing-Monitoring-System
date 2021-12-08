@@ -23,7 +23,7 @@ const Container = styled.div`
     background: #081a51;
     width: 15vw;
     min-width: 180px;
-    height: 100vh;
+    // height: 100vh;
     display: flex;
     flex-direction: column;
     font-family: 'SVN-Gilroy Medium';
