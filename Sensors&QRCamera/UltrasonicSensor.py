@@ -9,40 +9,47 @@ import socket
 import csv
 import json
 import unicodedata
+import socketio
+from imutils.video import VideoStream
+from flask import Response
+from flask import Flask
+from flask import render_template
+import threading
+import argparse
+import datetime
+import imutils
+import time
+import cv2
+from flask_cors import CORS, cross_origin
+from flask_socketio import SocketIO
+
+
 
 # CONST
 Buzzer_sig = 12 #Buzzer PIN
 GPIO_SIG = 5 # Ultrasonic PIN
+DISTANCE = 73
 entrance = 0
+#users = None
 
-# Socket configurations
-HOST = '192.168.0.105'  
-PORT = 4000
-s = socket.socket()
-host = socket.gethostname()
-users = None
 
 def getAndPrint():
     # Connection setup
-    
-    s.connect((HOST, 4000))
 
-    
     print("SeeedStudio Grove Ultrasonic get data and print")
-
+    
     # loop basically forever, until keyboardInterrupt Ctrl + C
-    for i in range(10000):
+    #for i in range(10000):
+    while True:
         miniPir() #this function is called first
-        #measurementInCM()
+        measurementInCM()
         
 
     # Reset GPIO settings
     GPIO.cleanup()
     
     
-def air():
-    
-     
+def air():    
     # for DHT11/DHT22
     PIN = 0 #Moisture sensor PIN
     sensor = seeed_dht.DHT("11",16) # Temperature and humidity sensor
@@ -51,13 +58,10 @@ def air():
     #print('Detecting enviroment detail...')
     humi, temp = sensor.read()
     m = sensor2.moisture
-    if not humi or not m is None:
-        print('humidity: {}%, temperature: {} C, moisture: {}'.format(humi, temp, m))
-        s.sendall(bytes('humidity {} celcius {} moisture {} measurements'.format(humi, temp, m), "utf8"))
+#    if not humi or not m is None:
+#        print('humidity: {}%, temperature: {} C, moisture: {}'.format(humi, temp, m))
+#        s.sendall(bytes('humidity {} celcius {} moisture {} measurements'.format(humi, temp, m), "utf8"))
         #s.sendall(bytes('Hello from Pi, collecting data!', "utf8"))
-    else:
-        print('humidity & temperature: {}'.format(temp))
-        time.sleep(2)
         
 def miniPir():
     pir = GroveMiniPIRMotionSensor(22) #Mini PIR Motion
@@ -65,12 +69,13 @@ def miniPir():
     def callback():
         print("The number of people who passed this area: {}".format(pir.count))
     
-    pir.on_detect = callback
+    pir.on_detect = callback        
     
     while True:
         try:
             measurementInCM() # this function is called after the miniPir function is called
-            time.sleep(0.5)
+            air()
+            #time.sleep(0.5)
         finally:
             GPIO.cleanup
         
@@ -90,6 +95,7 @@ def loudBuzzing(): # The sound of buzzer becomes loud and irritating when number
     GPIO.output(Buzzer_sig, GPIO.HIGH)
     time.sleep(1.5)
     GPIO.output(Buzzer_sig, GPIO.LOW)
+    peopleInRoom.leavingNoQR = 0
 
 def measurementInCM():
 
@@ -146,13 +152,16 @@ def measurementPulse(start, stop):
     distance = distance / 2
 
     print("Distance : {:10.2f} CM".format(distance))
-    air()
     
-    if distance <= 15:
-        #if a person wants to check QR Code
+    if (distance < DISTANCE) and (peopleInRoom.leavingNoQR is 1):
+        #if people passing through the ultrasonic and is leaving
+        peopleInRoom.leavingNoQR = 0
         entrance = 1
-    elif distance > 15 and distance < 55:
-        #if people passing through the ultrasonic and is leaving 
+        if (peopleInRoom.leavingUpdate == 1):
+            peopleInRoom.leavingUpdate = 0
+#            s.sendall(bytes('Current No.:{}'.format(peopleInRoom.pp), "utf8"))
+            print("Number of people in the room: {}".format(peopleInRoom.pp))
+    elif (distance < DISTANCE) and (peopleInRoom.leavingNoQR is 0):
         entrance = 0
         peopleInRoom.leavingDect = 1
     else:
@@ -161,11 +170,11 @@ def measurementPulse(start, stop):
     if entrance is 1:
         print("entry detected")
         numPeople = peopleInRoom.pp
-        if (users == None):
-            getUserList()
+#        if (users == None):
+#            getUserList()
         barcodeData = qrDectector(numPeople)
         if (barcodeData != None):
             if ("LegitBarcode" in barcodeData):
                 print(barcodeData)
-                s.sendall(bytes('{}'.format(barcodeData), "utf8"))
-        print("Number of people in the room: {}".format(peopleInRoom.pp))
+#                s.sendall(bytes('{}'.format(barcodeData), "utf8"))
+                print("Number of people in the room: {}".format(peopleInRoom.pp))
