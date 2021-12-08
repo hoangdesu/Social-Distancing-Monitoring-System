@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import axios from 'axios';
+import { io } from "socket.io-client";
 
 const Live = () => {
     // const videoConstraints = {
@@ -14,14 +15,21 @@ const Live = () => {
     //     const imageSrc = webcamRef.current.getScreenshot();
     // }, [webcamRef]);
 
-
-
     // --- video feed states
-    const [videoSrc, setVideoSrc] = useState(<img src="http://192.168.1.6:8000/video_feed" alt=""></img>);
+    const [videoSrc, setVideoSrc] = useState(<img src="http://127.0.0.1:5000/video_feed" alt=""></img>);
+    // const [videoSrc, setVideoSrc] = useState(<img src="http://192.168.137.51:5000/video_feed" alt=""></img>);
 
-    
+    // var socket = io('http://192.168.137.51:5000');
+    const io = require("socket.io")(httpServer, {  cors: {    
+        origin: "https:/127.0.0.1:5000/video_feed",    
+        methods: ["GET", "POST"]  
+    }});
+
+    socket.on("connect", () => {  
+        console.log(socket.id); // ojIckSD2jqNzOqIrAGzL
+    });
     // using Flask server
-    const VIDEO_FEED_URL = 'http://192.168.1.6:8000/video_feed'
+    const VIDEO_FEED_URL = 'https:/127.0.0.1:5000/video_feed'
 
     useEffect(() => {
         console.log("LIVE!!");
@@ -50,7 +58,7 @@ const Live = () => {
             .then(res => {
                 if (res.ok) {
                     console.log("Fetched video OK");
-                    setVideoSrc(<img src="http://192.168.1.6:8000/video_feed" alt=""></img>)
+                    setVideoSrc(<img src="http://127.0.0.1:5000/video_feed" alt=""></img>)
                 } else {
                     console.log("fetched error")
                 }
@@ -62,10 +70,13 @@ const Live = () => {
 
     return (
         <div>
+            <script type="text/javascript" charset="utf-8">
+            <script src="https://cdn.socket.io/socket.io-1.0.0.js"></script>
+            </script>
             {/* <img src="http://192.168.1.6:8000/video_feed" alt="" /> */}
             <div style={{ margin: 20 }}>
             <h1 style={{ paddingLeft: 20 }}>QR Reader</h1>
-            {videoSrc}
+            {/* {videoSrc} */}
             </div>
             {/* <button onClick={refetchVideo}>Refetch video</button> */}
             {/* CAM2

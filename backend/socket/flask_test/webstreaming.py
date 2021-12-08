@@ -9,6 +9,7 @@ import imutils
 import time
 import cv2
 from flask_cors import CORS, cross_origin
+from flask_socketio import SocketIO
 
 # initialize the output frame and a lock used to ensure thread-safe
 # exchanges of the output frames (useful when multiple browsers/tabs
@@ -19,11 +20,14 @@ lock = threading.Lock()
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app)
 # initialize the video stream and allow the camera sensor to
 # warmup
 #vs = VideoStream(usePiCamera=1).start()
 vs = VideoStream(src=0).start()
 time.sleep(2.0)
+
 
 @app.route("/")
 @cross_origin()
@@ -127,6 +131,7 @@ def test():
 
 # check to see if this is the main thread of execution
 if __name__ == '__main__':
+    socketio.run(app)
     # construct the argument parser and parse command line arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-i", "--ip", type=str, required=True,
@@ -147,6 +152,10 @@ if __name__ == '__main__':
         threaded=True, use_reloader=False)
 # release the video stream pointer
 vs.stop()
+
+@socketio.on('my message')
+def handle_message(data):
+    print('received message: ' + data)
 
 
 # NOTES:
