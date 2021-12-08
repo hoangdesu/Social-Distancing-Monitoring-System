@@ -57,7 +57,7 @@ function App() {
                 <LoginForm setLogin={setLogin} getAccount={getAccount} />
             ) : (
                 <AppContainer>
-                    <Sidebar getTitle={contentClickHandler} />
+                    <Sidebar getTitle={contentClickHandler} setLogin={setLogin} />
                     <Content>
                         <NavBar title={title} />
                         <Switch>
@@ -75,6 +75,7 @@ function App() {
                             </Route>
                         </Switch>
                     </Content>
+                    
                 </AppContainer>
             )}
         </Router>

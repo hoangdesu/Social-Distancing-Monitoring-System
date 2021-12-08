@@ -14,6 +14,7 @@ import analyticsIcon from '../assets/icons/analytics.svg';
 import analyticsIconActive from '../assets/icons/analyticsActive.svg';
 import aboutIcon from '../assets/icons/about.svg';
 import aboutIconActive from '../assets/icons/aboutActive.svg';
+import back from '../assets/icons/back.svg';
 
 import SidebarCSS from './Sidebar.module.css';
 
@@ -38,6 +39,8 @@ const MenuList = styled.ul`
     display: flex;
     flex-direction: column;
 `;
+
+
 
 const menuItemsOriginal = [
     {
@@ -88,10 +91,9 @@ const Sidebar = (props) => {
     //     if (location.pathname === item.route) console.log('con')
     // }
 
-
     const setActive = () => {
-        setMenuItems(prev => {
-            const newList = prev.map(item => {
+        setMenuItems((prev) => {
+            const newList = prev.map((item) => {
                 if (item.route === location.pathname) {
                     item.activeItem = true;
                     // console.log(item.title)
@@ -100,15 +102,15 @@ const Sidebar = (props) => {
                 }
                 // console.log(item.title, item.activeItem)
                 return item;
-            })
+            });
             return [...newList];
-        })
+        });
     };
 
     // Also change active icon. BUG FIXED!
     useEffect(() => {
-        setMenuItems(prev => {
-            const newList = prev.map(item => {
+        setMenuItems((prev) => {
+            const newList = prev.map((item) => {
                 if (item.route === location.pathname) {
                     item.activeItem = true;
                     // console.log(item.title)
@@ -116,23 +118,32 @@ const Sidebar = (props) => {
                     item.activeItem = false;
                 }
                 return item;
-            })
+            });
             return [...newList];
-        })
+        });
     }, [location.pathname]);
+
+    //
+    const logoutHandler = () => {
+        // const activeUser = JSON.parse(localStorage.getItem("activeUser"));
+        localStorage.removeItem('activeUser');
+        setTimeout(() => {
+            props.setLogin(false);
+        }, 500);
+    };
 
     return (
         <Container>
             <div
                 style={{
-                    padding: '10px', 
+                    padding: '10px',
                     display: 'flex',
                     // border: '1px solid red',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
                 }}
             >
-                <img src={rpg_logo} alt="" width='60%' />
+                <img src={rpg_logo} alt="" width="60%" />
             </div>
             <MenuList>
                 <label>MAIN MENU</label>
@@ -159,6 +170,18 @@ const Sidebar = (props) => {
                     );
                 })}
             </MenuList>
+            <button
+                className={SidebarCSS.btnLogout}
+                onClick={logoutHandler}
+            >
+                <img
+                    src={back}
+                    alt=""
+                    width="20px"
+                    style={{ marginRight: '10px' }}
+                />
+                Log out
+            </button>
         </Container>
     );
 };

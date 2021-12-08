@@ -26,3 +26,32 @@ label {
     color: #51CBFF;
 }
 
+.sidebar .button:hover {
+    cursor: pointer;
+}
+
+.btnLogout {
+    color: #c5cee8;
+    /* background-color: #e8734c; */
+    background-color: transparent;
+    border: none;
+    border: 1px solid rgb(113, 127, 200);
+    border-radius: 8px;
+    margin: 70px 20px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    transition: 0.2s all;
+    /* position: relative; */
+    /* bottom: 0; */
+}
+
+.btnLogout:hover {
+    cursor: pointer;
+    transform: translateY(-0.2em);
+    background-color: rgb(8, 15, 54);
+    color: white;
+    box-shadow: 1px 1px 1px 1px #555;
+}
