@@ -26,17 +26,17 @@ class GroveMiniPIRMotionSensor(GPIO):
 
     def _handle_event(self, pin, value):
         if value:
+            peopleInRoom.leavingNoQR = 1
             self.count = self.count + 1
             if peopleInRoom.leavingDect is 1:
+                peopleInRoom.leavingNoQR = 0
                 peopleInRoom.pp = peopleInRoom.pp - 1
                 peopleInRoom.leavingDect = 0
+                peopleInRoom.leavingUpdate = 1
                 print("Number of people in the room: {}".format(peopleInRoom.pp))
             if callable(self._on_detect):
                 self._on_detect()
                 
-
-
-
 
 def main():
     pir = GroveMiniPIRMotionSensor(22)

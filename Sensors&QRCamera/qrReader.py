@@ -20,7 +20,7 @@ def qrDectector(value):
     ap.add_argument("-o", "--output", type=str, default="barcodes.csv",
         help="path to output CSV file containing barcodes")
     args = vars(ap.parse_args())
-
+    
     ### From there, let’s initialize our video stream and open our CSV file:
     # initialize the video stream and allow the camera sensor to warm up
     print("[INFO] starting video stream...")
@@ -41,7 +41,7 @@ def qrDectector(value):
     print(csv)
      
     start = time.time()
-    print("start: " , start)
+    #print("start: " , start)
     
     ### Let’s begin capturing + processing frames:
     # loop over the frames from the video stream
@@ -81,7 +81,7 @@ def qrDectector(value):
             #if 's3755614,Tran Kim Long,0797999956' in csv.read():
             if barcodeData in csv.read():
                 print("Users Get Successfully")
-                if numPeople < 5: # If QR Code is valid and there are still rooms for more
+                if numPeople < 2: # If QR Code is valid and there are still rooms for more
                     peopleInRoom.pp = peopleInRoom.pp + 1
                     lcd.setCursor(0,0)
                     lcd.write('Welcome to the')
@@ -98,6 +98,8 @@ def qrDectector(value):
                     lcd.write('is full!')
                     print("Over 5 people in the room")
                     UltrasonicSensor.loudBuzzing() # Buzz loud and clear
+                    time.sleep(4.5)
+                    peopleInRoom.leavingNoQR = 0
                     qrFlag = True
             else: #If Invalid QR Code is scanned
                 """
@@ -113,6 +115,8 @@ def qrDectector(value):
                 lcd.setCursor(1, 0)
                 lcd.write('in the database')
                 print("QR code is not in the database")
+                time.sleep(4.5)
+                peopleInRoom.leavingNoQR = 0
                 qrFlag = True
 
                 # show the output frame
@@ -120,23 +124,29 @@ def qrDectector(value):
         key = cv2.waitKey(1) & 0xFF
         
         
-        print("timer: ", time.time() - start)
+        #print("timer: ", time.time() - start)
         
-        if (time.time() - start) > 15.0:
+        if (time.time() - start) > 10.0:
+            peopleInRoom.leavingNoQR = 1
             cv2.destroyAllWindows()
             vs.stop()
             break
      
         if qrFlag is True:
             peopleInRoom.leavingDect = 0
-            time.sleep(3.0)
+            peopleInRoom.leavingNoQR = 0
+            time.sleep(3.5)
+            peopleInRoom.leavingNoQR = 0
             print("[INFO] cleaning up...")
+            lcd.clear()
+            lcd.setCursor(0,0)
+            lcd.write('Please scan QR')
             # close the output CSV file do a bit of cleanup
             csv.close()
             cv2.destroyAllWindows()
             vs.stop()
             if legitFlag is True:
-                return ("LegitBarcode:{}:{}:\n".format(barcodeData, peopleInRoom.pp))
+                return ("LegitBarcode:{}:{}:\n".format(barcodeData,peopleInRoom.pp))
             else:
                 return ("{},{}\n".format(datetime.datetime.now(),barcodeData))
 
