@@ -135,7 +135,7 @@ def testingVideoStreamService():
     while True:
         with lock:
             # vs = VideoStream(src=0).start() # SOMETHING WRONG HERE!!!!
-            time.sleep(1/5)
+            # time.sleep(1/5)
             frame = vs.read()
             
             if frame is None: 
@@ -163,10 +163,10 @@ def testingVideoStreamService():
             b64_str = jpg_as_text.decode()
             
             cv2.imshow("Barcode Scanner", frame)
-            key = cv2.waitKey(1) & 0xFF
+            k = cv2.waitKey(1) & 0xFF
             
             socketio.emit('video-stream', b64_str)
-            print("Video frame sent!")
+            print("Video frame sent!" + '\n')
     cv2.destroyAllWindows()
     vs.stop()
 

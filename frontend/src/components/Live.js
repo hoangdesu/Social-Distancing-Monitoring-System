@@ -18,12 +18,12 @@ const Live = () => {
 
 
     // --- video feed states
-    const [videoSrc, setVideoSrc] = useState(<img src="http://192.168.1.6:8000/video_feed" alt=""></img>);
+    // const [videoSrc, setVideoSrc] = useState(<img src="http://192.168.1.6:8000/video_feed" alt=""></img>);
 
 
     // testing data stream from server
     const [counter, setCounter] = useState(0);
-    const [imageData, setImageData] = useState('');
+    // const [imageData, setImageData] = useState('');
 
     
     // using Flask server
@@ -53,10 +53,11 @@ const Live = () => {
         
     // }, []);
 
+    const socket = io('http://localhost:5000/');
     // TESTING SOCKET IO
     useEffect(() => {
 
-        const socket = io('http://192.168.137.51:5000/');
+        // window.location.reload();
         console.log(socket);
 
         socket.on("connect", data => {
@@ -87,7 +88,9 @@ const Live = () => {
         socket.on('video-stream', data => {
             console.log("Got the frame", data.slice(0, 10))
             const prefix = 'data:image/jpeg;charset=utf-8;base64, ';
-            setImageData(prefix + data);
+            console.log(prefix + data + '\n')
+            document.getElementById("image_data").src=(prefix + data);
+            // setImageData(prefix + data);
         })
 
         socket.on('brian', data => {
@@ -120,13 +123,12 @@ const Live = () => {
             {/* <img src="http://192.168.1.6:8000/video_feed" alt="" /> */}
             <div style={{ margin: 20 }}>
             <h1 style={{ paddingLeft: 20 }}>QR Reader</h1>
-            {videoSrc}
-            
+            {/* {videoSrc} */}
             </div>
 
-            <h1>{counter}</h1>
+            {/* <h1>{counter}</h1> */}
             <div style={{ border: '1px solid red'}}>
-                <img src={imageData} alt="" />
+                <img id="image_data" src="" alt="" />
             </div>
 
             {/* data:image/jpeg;charset=utf-8;base64,  */}
