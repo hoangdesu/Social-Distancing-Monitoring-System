@@ -9,33 +9,32 @@ import socket
 import csv
 import json
 import unicodedata
-import socketio
-from imutils.video import VideoStream
-from flask import Response
-from flask import Flask
-from flask import render_template
 import threading
 import argparse
 import datetime
 import imutils
 import time
 import cv2
-from flask_cors import CORS, cross_origin
-from flask_socketio import SocketIO
+import json
+import unicodedata
 
-
+HOST = '192.168.0.105'
+PORT = 4000
+s = socket.socket()
+host = socket.gethostname()
 
 # CONST
 Buzzer_sig = 12 #Buzzer PIN
 GPIO_SIG = 5 # Ultrasonic PIN
-DISTANCE = 73
+DISTANCE = 20
 entrance = 0
 #users = None
 
 
 def getAndPrint():
     # Connection setup
-
+    print("Estabilishing connection to server zZz...")
+    s.connect((HOST, 4000))
     print("SeeedStudio Grove Ultrasonic get data and print")
     
     # loop basically forever, until keyboardInterrupt Ctrl + C
@@ -58,9 +57,9 @@ def air():
     #print('Detecting enviroment detail...')
     humi, temp = sensor.read()
     m = sensor2.moisture
-#    if not humi or not m is None:
-#        print('humidity: {}%, temperature: {} C, moisture: {}'.format(humi, temp, m))
-#        s.sendall(bytes('humidity {} celcius {} moisture {} measurements'.format(humi, temp, m), "utf8"))
+    if not humi or not m is None:
+        #print('humidity: {}%, temperature: {} C, moisture: {}'.format(humi, temp, m))
+        s.sendall(bytes('humidity {} celcius {} moisture {} measurements'.format(humi, temp, m), "utf8"))
         #s.sendall(bytes('Hello from Pi, collecting data!', "utf8"))
         
 def miniPir():
@@ -95,7 +94,6 @@ def loudBuzzing(): # The sound of buzzer becomes loud and irritating when number
     GPIO.output(Buzzer_sig, GPIO.HIGH)
     time.sleep(1.5)
     GPIO.output(Buzzer_sig, GPIO.LOW)
-    peopleInRoom.leavingNoQR = 0
 
 def measurementInCM():
 
@@ -153,13 +151,13 @@ def measurementPulse(start, stop):
 
     print("Distance : {:10.2f} CM".format(distance))
     
-    if (distance < DISTANCE) and (peopleInRoom.leavingNoQR is 1):
+    if (distance < DISTANCE) and (peopleInRoom.leavingNoQR is 1 and peopleInRoom.full is 0):
         #if people passing through the ultrasonic and is leaving
         peopleInRoom.leavingNoQR = 0
         entrance = 1
         if (peopleInRoom.leavingUpdate == 1):
             peopleInRoom.leavingUpdate = 0
-#            s.sendall(bytes('Current No.:{}'.format(peopleInRoom.pp), "utf8"))
+            s.sendall(bytes('Current No.:{}'.format(peopleInRoom.pp), "utf8"))
             print("Number of people in the room: {}".format(peopleInRoom.pp))
     elif (distance < DISTANCE) and (peopleInRoom.leavingNoQR is 0):
         entrance = 0
@@ -172,9 +170,10 @@ def measurementPulse(start, stop):
         numPeople = peopleInRoom.pp
 #        if (users == None):
 #            getUserList()
-        barcodeData = qrDectector(numPeople)
+        barcodeData = qrMain()
+        print("QR Finish")
         if (barcodeData != None):
             if ("LegitBarcode" in barcodeData):
                 print(barcodeData)
-#                s.sendall(bytes('{}'.format(barcodeData), "utf8"))
+                #s.sendall(bytes('{}'.format(barcodeData), "utf8"))
                 print("Number of people in the room: {}".format(peopleInRoom.pp))
