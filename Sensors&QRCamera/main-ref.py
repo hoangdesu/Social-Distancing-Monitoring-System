@@ -46,11 +46,11 @@ legitFlag = False
 checkQR = True
 Buzzer_sig = 12 #Buzzer PIN
 GPIO_SIG = 5 # Ultrasonic PIN
-DISTANCE = 20
+DISTANCE = 68
 entrance = 0
 frame = None
 global thread_count
-csv
+global csv
  
 def getAndPrint():
     
@@ -94,9 +94,9 @@ def miniPir():
 
     while True:
         try:
-            measurementInCM() # this function is called after the miniPir function is called
+            measurementInCM()  # this function is called after the miniPir function is called
+            time.sleep(0.7)
             air()
-            #time.sleep(0.5)
             
         finally:
             GPIO.cleanup
@@ -182,6 +182,7 @@ def measurementPulse(start, stop):
     elif (distance < DISTANCE) and ((peopleInRoom.leavingNoQR is 0) or peopleInRoom.full is 2):
         entrance = 0
         peopleInRoom.leavingDect = 1
+        print("Leaving...")
     else:
         entrance = 0
 
