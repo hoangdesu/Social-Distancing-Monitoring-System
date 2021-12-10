@@ -50,7 +50,7 @@ DISTANCE = 20
 entrance = 0
 frame = None
 global thread_count
-global csv
+csv
  
 def getAndPrint():
     
@@ -170,7 +170,7 @@ def measurementPulse(start, stop):
     distance = distance / 2
     print("Distance : {:10.2f} CM".format(distance))
 
-    if (distance < DISTANCE) and (peopleInRoom.leavingNoQR == 1 and peopleInRoom.full == 0):
+    if (distance < DISTANCE) and (peopleInRoom.leavingNoQR is 1 and peopleInRoom.full is 0):
         #if people passing through the ultrasonic and is leaving
         peopleInRoom.leavingNoQR = 0
         entrance = 1
@@ -179,7 +179,7 @@ def measurementPulse(start, stop):
             s.sendall(bytes('Current No.:{}'.format(peopleInRoom.pp), "utf8"))
             print("Number of people in the room: {}".format(peopleInRoom.pp))
 
-    elif (distance < DISTANCE) and (peopleInRoom.leavingNoQR == 0):
+    elif (distance < DISTANCE) and ((peopleInRoom.leavingNoQR is 0) or peopleInRoom.full is 2):
         entrance = 0
         peopleInRoom.leavingDect = 1
     else:
@@ -244,6 +244,7 @@ def validateQR(barcodes):
             #lcd.write('QR code is not')
             #lcd.setCursor(1, 0)
             #lcd.write('in the database')
+            peopleInRoom.full = 2
             print("QR code is not in the database")
             time.sleep(4)
             peopleInRoom.leavingNoQR = 0
