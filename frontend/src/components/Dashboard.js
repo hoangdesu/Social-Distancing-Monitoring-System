@@ -98,6 +98,31 @@ export const data1 = {
 };
 
 const Dashboard = () => {
+    const VIDEO_FEED_URL = 'http://localhost:6000/measurements/latests'
+
+    useEffect(() => {
+        console.log("LIVE!!");
+        axios.get(VIDEO_FEED_URL)
+            .then(data => {
+                console.log("Video:", data);
+            })
+            .catch(e => {
+                console.log("Error:", e);
+            })
+        fetch(VIDEO_FEED_URL)
+            .then(res => {
+                if (res.ok) {
+                    console.log("Fetched video OK");
+                } else {
+                    console.log("fetched error")
+                }
+            })
+            .catch(e => {
+                console.log(e);
+            })
+
+        
+    }, []);
     // const
     return (
         <div className={DashboardCSS.container}>

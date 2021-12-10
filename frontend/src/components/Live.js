@@ -29,29 +29,29 @@ const Live = () => {
     // using Flask server
     const VIDEO_FEED_URL = 'http://192.168.1.6:8000/video_feed'
 
-    // useEffect(() => {
-    //     console.log("LIVE!!");
-    //     // axios.get(VIDEO_FEED_URL)
-    //     //     .then(data => {
-    //     //         console.log("Video:", data);
-    //     //     })
-    //     //     .catch(e => {
-    //     //         console.log("Error:", e);
-    //     //     })
-    //     // fetch(VIDEO_FEED_URL)
-    //     //     .then(res => {
-    //     //         if (res.ok) {
-    //     //             console.log("Fetched video OK");
-    //     //         } else {
-    //     //             console.log("fetched error")
-    //     //         }
-    //     //     })
-    //     //     .catch(e => {
-    //     //         console.log(e);
-    //     //     })
+    useEffect(() => {
+        console.log("LIVE!!");
+        axios.get(VIDEO_FEED_URL)
+            .then(data => {
+                console.log("Video:", data);
+            })
+            .catch(e => {
+                console.log("Error:", e);
+            })
+        fetch(VIDEO_FEED_URL)
+            .then(res => {
+                if (res.ok) {
+                    console.log("Fetched video OK");
+                } else {
+                    console.log("fetched error")
+                }
+            })
+            .catch(e => {
+                console.log(e);
+            })
 
         
-    // }, []);
+    }, []);
 
     const socket = io('ws://localhost:5000/');
     // TESTING SOCKET IO
