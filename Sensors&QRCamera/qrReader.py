@@ -6,11 +6,23 @@ import datetime
 import imutils
 import time
 import cv2
-import requests
 import peopleInRoom
 import seeed_dht
 from grove.display import JHD1802
 import UltrasonicSensor
+from imutils.video import VideoStream
+from flask import Response
+from flask import Flask
+from flask import render_template
+import threading
+import argparse
+import datetime
+import imutils
+import time
+import cv2
+from flask_cors import CORS, cross_origin
+from flask_socketio import SocketIO
+import base64
 
 def qrDectector(value):
     numPeople = value

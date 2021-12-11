@@ -124,6 +124,8 @@ const Live = () => {
             <div style={{ margin: 20 }}>
             <h1 style={{ paddingLeft: 20 }}>QR Reader</h1>
             {/* {videoSrc} */}
+            {/* <img src="http://localhost:5000/video_feed" alt="" /> */}
+            <img src="http://192.168.137.51:5000/video_feed" alt="" />
             </div>
 
             {/* <h1>{counter}</h1> */}
