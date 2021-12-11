@@ -9863,6 +9863,11 @@
     "loose-envify" "^1.1.0"
     "object-assign" "^4.1.1"
 
+"read-file@^0.2.0":
+  "integrity" "sha1-cMa6+IQux9FUD5gf0Oau1Mgb1UU="
+  "resolved" "https://registry.npmjs.org/read-file/-/read-file-0.2.0.tgz"
+  "version" "0.2.0"
+
 "read-pkg-up@^2.0.0":
   "integrity" "sha1-a3KoBImE4MQeeVEP1en6mbO1Sb4="
   "resolved" "https://registry.npmjs.org/read-pkg-up/-/read-pkg-up-2.0.0.tgz"

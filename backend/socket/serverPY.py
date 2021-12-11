@@ -10,7 +10,7 @@ print(host)
 port = 4000
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((host, port))
-url = "http://localhost:3000/"
+url = "http://localhost:7000/"
 
 
 s.listen(1)
@@ -37,14 +37,15 @@ try:
             }
             measure = url + 'measurements/'
             z = requests.post(url = measure, json = data)
-            #print(z)
+            print("Measurement Posting:")
+            print(z)
 
         if (str_data == "getUsers"):
             users = url + 'users/all/'
             r = requests.get(url = users)
             data = r.text
             c.sendall(data.encode("utf8"))
-
+            
         if ("LegitBarcode" in str_data):
             # Get data from output string
             x = str_data.split(":")

@@ -31,7 +31,9 @@ class GroveMiniPIRMotionSensor(GPIO):
                 peopleInRoom.leavingNoQR = 0
                 peopleInRoom.leavingDect = 0
                 peopleInRoom.leavingUpdate = 1
+                peopleInRoom.pendingUpdate = 1
                 print("Number of people in the room: {}".format(peopleInRoom.pp))
+                
             if peopleInRoom.full is 1:
                 peopleInRoom.full = 2
             elif peopleInRoom.full is 2:
