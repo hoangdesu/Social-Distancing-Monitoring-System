@@ -21,13 +21,14 @@ import SidebarCSS from './Sidebar.module.css';
 const Container = styled.div`
     // position: fixed;
     background: #081a51;
-    width: 15vw;
-    min-width: 180px;
-    // height: 100vh;
+    min-width: 10px;
+    width: 12vw;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     font-family: 'SVN-Gilroy Medium';
     color: #ccd2e3;
+    font-size: 0.8rem;
     // padding: 20px;
     // box-shadow: 1px 0px 2px 1px #aaa;
     // z-index: 1;

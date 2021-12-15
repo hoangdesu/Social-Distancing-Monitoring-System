@@ -7,6 +7,12 @@
     align-items: center;
     list-style: none;
     text-decoration: none;
+    transition: background-color 0.15s ease-in;
+}
+
+.navlink:hover {
+    background-color: #1B2B65;
+    border-radius: 5px;
 }
 
 .navlink span {
@@ -42,7 +48,8 @@ label {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    /* font-family:Verdana, Geneva, Tahoma, sans-serif; */
+    font-family: 'SVN-Gilroy Medium';
     transition: 0.2s all;
     /* position: relative; */
     /* bottom: 0; */
