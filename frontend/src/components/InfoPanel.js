@@ -11,11 +11,10 @@ const InfoPanel = (props) => {
     const { measurements, peopleNum } = props;
 
     const maxPeople = 5;
+    const peopleIcons = [1, 2, 3, 4, 5];
     const [activeColor, disabledColor] = ['green', 'pink'];
     const [ppl, setPpl] = useState(peopleNum);
-    const [personIconActive, setPersonIconActive] = useState('');
-
-    const [wob, setWob] = useState(0);
+    
 
     // only for testing graph responsive data
     const changePpl = (option) => {
@@ -32,7 +31,6 @@ const InfoPanel = (props) => {
         }
     };
 
-    const peopleIcons = [1, 2, 3, 4, 5];
 
     return (
         <div
@@ -41,6 +39,7 @@ const InfoPanel = (props) => {
             <div className={`${DashboardCSS.sensor}`}>
                 <button onClick={() => changePpl('remove')}>Remove</button>
                 <button onClick={() => changePpl('add')}>Add</button>
+                <p>(Message)</p>
                 <h2>
                     {ppl}/{maxPeople}
                 </h2>
@@ -83,6 +82,8 @@ const InfoPanel = (props) => {
             <div className={`${DashboardCSS.sensor}`}>
                 <p>(use progress bar)</p>
                 <h4>Moisture chart</h4>
+                {/* https://morioh.com/p/f593c7f8cfb0 */}
+                {/* https://www.npmjs.com/package/react-sweet-progress-simdi */}
             </div>
             
         </div>

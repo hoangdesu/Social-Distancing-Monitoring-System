@@ -21,8 +21,8 @@ import SidebarCSS from './Sidebar.module.css';
 const Container = styled.div`
     // position: fixed;
     background: #081a51;
-    min-width: 10px;
     width: 12vw;
+    min-width: 140px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
