@@ -30,15 +30,14 @@ try:
             x = str_data.split()
             #print(x)
             #sample output ['humidity', '42,', 'celcius', '35,', 'moisture', '0']
-            data = json={
-                x[0]: float(x[1]),
-                x[2]: float(x[3]),
-                x[4]: float(x[5])
-            }
-            measure = url + 'measurements/'
-            z = requests.post(url = measure, json = data)
-            #print("Measurement Posting:")
-            #print(z)
+            if (x[1] != "0" or x[3] != "0"):
+                measure_data = json={
+                    x[0]: float(x[1]),
+                    x[2]: float(x[3]),
+                    x[4]: float(x[5])
+                }
+                measure = url + 'measurements/'
+                z = requests.post(url = measure, json = measure_data)
 
         if (str_data == "getUsers"):
             users = url + 'users/all/'
