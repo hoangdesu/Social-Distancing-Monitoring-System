@@ -33,7 +33,6 @@
     box-shadow: 0px 5px 10px #f1f2fa;
     border-radius: 8px;
     padding: 30px;
-    /* flex: 1; */
     transition: 0.2s all;
 }
 
@@ -62,4 +61,9 @@
 
 .container .live-feed > * {
     margin-bottom: 15px;
+}
+
+.container .top-pane {
+    display: flex;
+    justify-content: space-between;
 }
