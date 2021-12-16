@@ -7,12 +7,14 @@
     align-items: center;
     list-style: none;
     text-decoration: none;
-    transition: background-color 0.15s ease-in;
+    transition: background-color 0.1s ease-in;
 }
 
 .navlink:hover {
-    background-color: #1B2B65;
-    border-radius: 5px;
+    background-color: #1B2B69;
+    /* color: #8fb47b; */
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
 }
 
 .navlink span {
@@ -21,7 +23,8 @@
 
 .active {
     color: #fff;
-    border-radius: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
     background-color: #1B2B65;
     transition: background-color 0.15s ease-in;
 }

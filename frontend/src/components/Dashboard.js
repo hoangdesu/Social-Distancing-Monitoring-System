@@ -57,6 +57,7 @@ const Dashboard = () => {
                     ...prev,
                     temperature: Math.floor(Math.random() * 50),
                     humidity: Math.floor(Math.random() * 100),
+                    moisture: Math.floor(Math.random() * 100),
                 })); // for testing only
                 console.log('Error fetching measurements -', e);
             });
@@ -92,6 +93,21 @@ const Dashboard = () => {
             });
     };
 
+    // only for testing graph responsive data
+    const changePpl = (option) => {
+        if (option === 'add') {
+            setPeopleNum((prev) => {
+                if (prev >= 0 && prev < 5) return prev + 1;
+                else return prev;
+            });
+        } else if (option === 'remove') {
+            setPeopleNum((prev) => {
+                if (prev > 0 && prev <= 5) return prev - 1;
+                else return prev;
+            });
+        }
+    };
+
     // --- EFFECTS ---
     useEffect(() => {
         setInterval(() => {
@@ -103,9 +119,18 @@ const Dashboard = () => {
 
     return (
         <div className={DashboardCSS.container}>
-            {/* <h2>Measurements</h2> */}
+            <h2>Measurements</h2>
             <InfoPanel measurements={measurements} peopleNum={peopleNum} />
 
+            {/* for testing only */}
+            <div>
+                <button onClick={() => changePpl('remove')}>Remove</button>
+                <button onClick={() => changePpl('add')}>Add</button>
+            </div>
+
+            <h2>Camera</h2>
+
+{/* 
             <div
                 id="qr-mask"
                 className={`${DashboardCSS['card']} ${DashboardCSS['medium-element']}`}
@@ -113,9 +138,7 @@ const Dashboard = () => {
                 <div>
                     <img src={VIDEO_FEED} alt="QR_Camera" />
                 </div>
-                {/* <h3>Total people</h3>
-                    <Line options={options} data={data1} /> */}
-            </div>
+            </div> */}
         </div>
     );
 };

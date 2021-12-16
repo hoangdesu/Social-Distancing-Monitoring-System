@@ -8,7 +8,7 @@
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    overflow: scroll;
+    /* overflow: scroll; */
     /* justify-content: space-between; */
 }
 
@@ -74,11 +74,51 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     min-width: 250px;
     width: 100%;
 }
 
 .container .people-icons > * {
     transition: all ease 0.2s;
+}
+
+.container .indicator {
+    /* display: flex;
+    justify-content: center;
+    text-align: center;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    user-select: none; */
+    /* background-color: pink; */
+    position: relative;
+}
+
+.container .progressBar {
+    /* background-color: pink; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.container .logo {
+    width: 50px;
+    position: absolute;
+    top: 45px;
+    /* background-color: red;; */
+}
+
+.container .percentage {
+    font-size: 1.2rem;
+    position: absolute;
+    bottom: 5px;
+}
+
+.container .humidity {
+    margin: 5px;
 }
