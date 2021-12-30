@@ -26,30 +26,30 @@ const Live = () => {
 
     
     // using Flask server
-    const VIDEO_FEED_URL = 'http://192.168.1.6:8000/video_feed'
+    // const VIDEO_FEED_URL = 'http://192.168.1.6:8000/video_feed'
 
-    useEffect(() => {
-        console.log("LIVE!!");
-        axios.get(VIDEO_FEED_URL)
-            .then(data => {
-                console.log("Video:", data);
-            })
-            .catch(e => {
-                console.log("Error:", e);
-            })
-        fetch(VIDEO_FEED_URL)
-            .then(res => {
-                if (res.ok) {
-                    console.log("Fetched video OK");
-                } else {
-                    console.log("fetched error")
-                }
-            })
-            .catch(e => {
-                console.log(e);
-            })
-        }, 
-    []);
+    // useEffect(() => {
+    //     console.log("LIVE!!");
+    //     axios.get(VIDEO_FEED_URL)
+    //         .then(data => {
+    //             console.log("Video:", data);
+    //         })
+    //         .catch(e => {
+    //             console.log("Error:", e);
+    //         })
+    //     fetch(VIDEO_FEED_URL)
+    //         .then(res => {
+    //             if (res.ok) {
+    //                 console.log("Fetched video OK");
+    //             } else {
+    //                 console.log("fetched error")
+    //             }
+    //         })
+    //         .catch(e => {
+    //             console.log(e);
+    //         })
+    //     }, 
+    // []);
 
     const socket = io('ws://localhost:5000/');
     // TESTING SOCKET IO
@@ -118,15 +118,12 @@ const Live = () => {
 
     return (
         <div>
-            <img src="http://192.168.137.51:5000/video_feed" alt="" />
             <div style={{ margin: 20 }}>
-            <h1 style={{ paddingLeft: 20 }}>QR Reader</h1>
-            {/* {videoSrc} */}
+            <h1 style={{ paddingLeft: 20 }}>Room Camera and Bird Eye View</h1> 
             </div>
-
-            {/* <h1>{counter}</h1> */}
+            
             <div style={{ border: '1px solid red'}}>
-                <img id="image_data" src="" alt="" />
+                <img src="http://localhost:9099/video_feed" alt="video_feed" />
             </div>
 
             {/* data:image/jpeg;charset=utf-8;base64,  */}

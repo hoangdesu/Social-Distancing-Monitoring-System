@@ -717,17 +717,11 @@ def shutdown_server():
 # Flask Server Endpoints
 
 @app.route("/video_feed")
-
 @cross_origin()
-
 def video_feed():
-
     # return the response generated along with the specific media
-
     # type (mime type)
-
     return Response(startVideoStream(),
-
         mimetype = "multipart/x-mixed-replace; boundary=frame")
 
 
