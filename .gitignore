@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
+/Social-distance-detection-master
 
 # testing
 /coverage
