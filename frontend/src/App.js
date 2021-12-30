@@ -20,7 +20,6 @@ const Content = styled.div`
     // background-color: #edeff7;
     width: 100%;
     overflow: scroll;
-    // CAM6
     // z-index: 10;
     // padding: 20px;
 `;

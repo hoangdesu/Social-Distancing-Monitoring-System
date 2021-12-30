@@ -38,7 +38,7 @@
 }
 
 .container .card:hover {
-    transform: scale(1.01);
+    transform: scale(1.005);
     box-shadow: 0px 5px 10px #e1e3ef;
 }
 
@@ -48,7 +48,6 @@
     height: 150px;
 
 }
-
 
 .container .large-element {
     width: 58.5%;

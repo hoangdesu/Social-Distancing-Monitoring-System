@@ -10,7 +10,7 @@ const LATEST_MEASUREMENTS = 'http://localhost:7000/measurements/latest/';
 const VIDEO_FEED = 'http://192.168.137.51:5000/video_feed';
 const ALL_ENTRY = 'http://localhost:7000/entry/all';
 const LATEST_MESSAGE = 'http://localhost:7000/message/latest';
-const UPDATE_INTERVAL = 1000 * 2; // ms
+const UPDATE_INTERVAL = 1000 * 2; // 2s
 
 const Dashboard = () => {
     // --- STATES ---
@@ -53,12 +53,14 @@ const Dashboard = () => {
             })
             .catch((e) => {
                 setServerConnected(false);
+
+                // for testing only
                 setMeasurements((prev) => ({
                     ...prev,
                     temperature: Math.floor(Math.random() * 50),
                     humidity: Math.floor(Math.random() * 100),
                     moisture: Math.floor(Math.random() * 100),
-                })); // for testing only
+                })); 
                 console.log('Error fetching measurements -', e);
             });
     };
@@ -119,7 +121,8 @@ const Dashboard = () => {
 
     return (
         <div className={DashboardCSS.container}>
-            <h2>Measurements</h2>
+            <h2>Server status: {serverConnected ? 'connected' : 'connecting...'}</h2>
+            {/* <h2>Measurements</h2> */}
             <InfoPanel measurements={measurements} peopleNum={peopleNum} />
 
             {/* for testing only */}
@@ -129,6 +132,9 @@ const Dashboard = () => {
             </div>
 
             <h2>Camera</h2>
+            <div className={DashboardCSS.card}>
+                <img src={VIDEO_FEED} alt="QR_Camera" />
+            </div>
 
 {/* 
             <div
