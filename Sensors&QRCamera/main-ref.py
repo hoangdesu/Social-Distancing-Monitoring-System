@@ -59,12 +59,11 @@ lcd.setCursor(0, 0)
 global thread_count
 global csvfile
 numPeople = 0
-sensor_sleep = False
 startTime = 0
 time_counter = [0.0,0.0]
 range = [0.0,0.0]
-welcomeIn = 0
-welcomeOut = 0
+peopleInRoom.welcomeIn = 0
+peopleInRoom.welcomeOut = 0
 freezeSensors = 0
 
 def getAndPrint():
@@ -212,9 +211,7 @@ def measurementInCM():
 
 def measurementPulse():
     global freezeSensors
-    global welcomeIn, welcomeOut
     global checkQR
-    global sensor_sleep
     global numPeople
     global startTime
     global timeFlag
@@ -225,9 +222,9 @@ def measurementPulse():
         time_counter[0] = 0
         time_counter[1] = 0
         time.sleep(2)
-        welcomeIn = welcomeIn + 1 # Number of people coming in
-        print("In: {}".format(welcomeIn))
-        
+        peopleInRoom.welcomeIn = peopleInRoom.welcomeIn + 1 # Number of people coming in
+        updatePeopleEntry()
+        #print("In: {}".format(peopleInRoom.welcomeIn))
 
     elif time_counter[1] is 1 and freezeSensors is 0:
         entrance = 0
@@ -237,17 +234,17 @@ def measurementPulse():
         print("Leaving...")
         peopleInRoom.pp = peopleInRoom.pp - 1
         print("People currently in room: {}".format(peopleInRoom.pp))
-        welcomeOut = welcomeOut + 1 # Number of people going out
-        print("Out: {}".format(welcomeOut))
+        peopleInRoom.welcomeOut = peopleInRoom.welcomeOut + 1 # Number of people going out
+        updatePeopleEntry()
+        #print("Out: {}".format(peopleInRoom.welcomeOut))
 
     elif time_counter[1] is 1 and freezeSensors is 1:
-        welcomeOut = welcomeOut + 1
-        print("Out: {}".format(welcomeOut))
+        peopleInRoom.welcomeOut = peopleInRoom.welcomeOut + 1
+        print("Out: {}".format(peopleInRoom.welcomeOut))
         entrance = 0
         time_counter[0] = 0
         time_counter[1] = 0
         time.sleep(1)
-        
         
     else:
         entrance = 0
@@ -268,6 +265,9 @@ def measurementPulse():
     
     if (qrFlag is True) or (timeFlag is True):
         freezeSensors = 0
+
+def updatePeopleEntry():
+    save_entry('{} {} {}'.format(peopleInRoom.pp, peopleInRoom.welcomeIn, peopleInRoom.welcomeOut))
 
 def debouncing():
     global debounceFlag
@@ -339,7 +339,8 @@ def startVideoStream():
                                 legitFlag = True
                                 qrFlag = True
                                 print("People currently in room: {}".format(peopleInRoom.pp))
-                                post_join('updateJoin :{}:{}'.format(barcodeData, peopleInRoom.pp))
+                                updatePeopleEntry()
+                                #post_join('updateJoin :{}:{}'.format(barcodeData, peopleInRoom.pp))
                                 print(barcodeData)
                                 break
                                 
@@ -369,7 +370,6 @@ def startVideoStream():
                             time.sleep(5)
                             print("QR code is not in the database")
                             qrFlag = True
-                            sensor_sleep = True 
                             break
 
                         if (count == len(x) - 1):
@@ -386,7 +386,6 @@ def startVideoStream():
                     checkQR = False
                     peopleInRoom.leavingNoQR = 1
                     cv2.destroyAllWindows()
-                    #vs.stop()
                     break
 
                 # if (timeFlag):
@@ -400,7 +399,6 @@ def startVideoStream():
                 #         timeFlag = False
 
                 if qrFlag is True:
-                    checkQR = False
                     print("[INFO] cleaning up...")
                     qrFlag = False
                     post_message('message :QR Scan is done')
@@ -409,10 +407,10 @@ def startVideoStream():
                     lcd.write("Hello!")
                     startTime = 0 
                     timeFlag = False
-                    time.sleep(2)
+                    time.sleep(5)
+                    checkQR = False
                     #csv.close()
                     cv2.destroyAllWindows()
-                    #vs.stop() 
             # else:
             #     print("Nothing to do here")
     finally:

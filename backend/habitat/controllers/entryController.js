@@ -1,16 +1,17 @@
 var pool = require('../config/database');
 
 exports.postEntry = function(req, res, next) {
-    var {entry_number, entry_id} = req.body;
+    var {entry_number, current_in, current_out} = req.body;
     var dataValid = (
         typeof entry_number == 'number' &&
-        typeof entry_id == 'string' 
+        typeof current_in == 'number' &&
+        typeof current_out == 'number' 
     )
 
     if (dataValid) {
         // DO NOT insert user generated values into the string directly
-        var insertSQL = `INSERT INTO entry (entry_number, entry_id) VALUES ($1, $2);`
-        var values = [entry_number, entry_id]
+        var insertSQL = `INSERT INTO entry (entry_number, current_in, current_out) VALUES ($1, $2, $3);`
+        var values = [entry_number, current_in, current_out]
         // Pass an array of values as the second 
         // argument for pool.query() method to 
         // build the query string safely.
@@ -27,7 +28,7 @@ exports.postEntry = function(req, res, next) {
     }
 }
 
-exports.getAllEntries = function(req, res, next) {
+exports.getLatestEntry = function(req, res, next) {
     // Get most recent measurement from db and return as JSON.
     pool.query('SELECT * FROM entry ORDER BY created DESC LIMIT 1;', (error, results) => {
         if (error)

@@ -16,6 +16,17 @@ def save_measurements(data):
         measure = url + 'measurements/'
         p = requests.post(url = measure, json = measure_data)
         print("Measurement status: {}".format(p))
+        
+def save_entry(data):
+    x = data.split()
+    measure_data = json={
+        'entry_number': int(x[0]),
+        'current_in': int(x[1]),
+        'current_out': int(x[2])
+    }
+    measure = url + 'entry/'
+    p = requests.post(url = measure, json = measure_data)
+    print("Entry status: {}".format(p))
 
 def get_all_users():
     users = url + 'users/all/'

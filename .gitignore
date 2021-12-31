@@ -1,5 +1,7 @@
 # dependencies
 /node_modules
+/experimental
+/backend/experimental
 
 # testing
 /coverage

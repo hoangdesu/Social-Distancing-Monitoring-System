@@ -6,6 +6,6 @@ var entry = require('../controllers/entryController');
 
 router.post('/', entry.postEntry);
 
-router.get('/all/', entry.getAllEntries);
+router.get('/latest/', entry.getLatestEntry);
 
 module.exports = router;
