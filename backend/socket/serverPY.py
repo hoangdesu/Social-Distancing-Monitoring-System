@@ -1,9 +1,7 @@
 #server.py 
 import requests 
 import socket
-from typing import final 
 import json
-
 
 host = socket.gethostname()
 print(host)
@@ -11,7 +9,6 @@ port = 4000
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((host, port))
 url = "http://localhost:7000/"
-
 
 s.listen(1)
 print("Server listening on port", port)
