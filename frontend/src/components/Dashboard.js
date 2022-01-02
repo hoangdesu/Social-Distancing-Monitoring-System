@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import DashboardCSS from './Dashboard.module.css';
-
+import nocamera from './../assets/nocam.png'
 import InfoPanel from './InfoPanel';
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
 // API ENDPOINTS
 const LATEST_MEASUREMENTS = 'http://localhost:7000/measurements/latest/';
 const VIDEO_FEED = 'http://192.168.137.5:5000/video_feed';
 const ALL_ENTRY = 'http://localhost:7000/entry/latest';
 const LATEST_MESSAGE = 'http://localhost:7000/message/latest';
-const UPDATE_INTERVAL = 1000 * 2; // 2s
+const UPDATE_INTERVAL = 1000 * 3; // 2s
 
 const Dashboard = () => {
     // --- STATES ---
@@ -25,7 +28,7 @@ const Dashboard = () => {
     const [peopleOut, setPeopleOut] = useState(0);
     const [serverConnected, setServerConnected] = useState(false);
     const [camIsOn, setCamIsOn] = useState(false);
-
+    const [message, setMessage] = useState("")
     // --- FUNCTIONS ---
     const fetchMeasurements = () => {
         axios
@@ -100,10 +103,13 @@ const Dashboard = () => {
                     let content = res.data[0].content;
                     console.log(content)
                     if (content === 'QR Scan is done') {
-                        // update QR scan camera
+                        setCamIsOn(false)
                     } else if (content === 'QR Check!') {
-                        // update QR scan camera
+                        setCamIsOn(true)
                     }
+                    else
+                        setMessage(content)
+                        setCamIsOn(false)
                 }
             })
             .catch((e) => {
@@ -137,29 +143,31 @@ const Dashboard = () => {
 
     return (
         <div className={DashboardCSS.container}>
-            <h2>Server status: {serverConnected ? 'connected' : 'connecting...'}</h2>
-            {/* <h2>Measurements</h2> */}
-            <InfoPanel measurements={measurements} peopleNum={peopleNum} peopleIn={peopleIn} peopleOut={peopleOut} />
-
-            {/* for testing only */}
+            <div className={DashboardCSS['first-row']}>
+                <h2>Server status: {serverConnected ? 'connected' : 'connecting...'}</h2>
+            </div>
+            <div className={DashboardCSS['second-row']}>
+                <InfoPanel measurements={measurements} peopleNum={peopleNum} peopleIn={peopleIn} peopleOut={peopleOut} />
+            </div>
+            <div className={DashboardCSS['third-row']}>
+                <h2>Camera and Messages</h2>
+            </div>
+            <div className={DashboardCSS['fourth-row']}>
+                <div
+                    className={`${DashboardCSS['card']} ${DashboardCSS['medium-element']}`}
+                    style={{paddingLeft: 600}}
+                >
+                    <h2>Message: {message}</h2>
+                    <br/>
+                    <h4>{camIsOn == true ? 'QR is Reading' : 'QR Reader is on IDLE Mode'}</h4>
+                    <img src={ camIsOn == true ? VIDEO_FEED : nocamera} alt="QR_Camera" style={{height: 400}} />
+                </div>
+              
+            </div>
+            {/* for testing only
             <div>
                 <button onClick={() => changePpl('remove')}>Remove</button>
                 <button onClick={() => changePpl('add')}>Add</button>
-            </div>
-
-            <h2>Camera</h2>
-            <div className={DashboardCSS.card}>
-                <img src={VIDEO_FEED} alt="QR_Camera" />
-            </div>
-
-{/* 
-            <div
-                id="qr-mask"
-                className={`${DashboardCSS['card']} ${DashboardCSS['medium-element']}`}
-            >
-                <div>
-                    <img src={VIDEO_FEED} alt="QR_Camera" />
-                </div>
             </div> */}
         </div>
     );
