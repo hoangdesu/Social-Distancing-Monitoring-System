@@ -11,7 +11,7 @@ import DashboardCSS from './Dashboard.module.css';
 
 const InfoPanel = (props) => {
     const { measurements, peopleNum } = props;
-
+    const { peopleIn, peopleOut } = props;
     const maxPeople = 5;
     const peopleIcons = [1, 2, 3, 4, 5];
     const [activeColor, disabledColor] = ['green', 'pink'];
@@ -44,6 +44,27 @@ const InfoPanel = (props) => {
                 </div>
                 <h4>Number of people in room</h4>
             </div>
+
+            {/* PEOPLE IN ROOM IN */}
+            <div className={`${DashboardCSS.sensor}`}>
+                <p style={{ color: '#450a1a' }}>
+                </p>
+                <h2>
+                    {peopleIn}
+                </h2>
+                <h4>Number of people went in:</h4>
+            </div>
+
+             {/* PEOPLE IN ROOM OUT */}
+             <div className={`${DashboardCSS.sensor}`}>
+                <p style={{ color: '#450a1a' }}>
+                </p>
+                <h2>
+                    {peopleOut}
+                </h2>
+                <h4>Number of people went out:</h4>
+            </div>
+
 
             {/* TEMPERATURE */}
             <div className={`${DashboardCSS.sensor}`}>

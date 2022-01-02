@@ -7,8 +7,8 @@ import InfoPanel from './InfoPanel';
 
 // API ENDPOINTS
 const LATEST_MEASUREMENTS = 'http://localhost:7000/measurements/latest/';
-const VIDEO_FEED = 'http://192.168.137.51:5000/video_feed';
-const ALL_ENTRY = 'http://localhost:7000/entry/all';
+const VIDEO_FEED = 'http://192.168.137.5:5000/video_feed';
+const ALL_ENTRY = 'http://localhost:7000/entry/latest';
 const LATEST_MESSAGE = 'http://localhost:7000/message/latest';
 const UPDATE_INTERVAL = 1000 * 2; // 2s
 
@@ -21,6 +21,8 @@ const Dashboard = () => {
         created: 'Created Time (placeholder)',
     });
     const [peopleNum, setPeopleNum] = useState(0);
+    const [peopleIn, setPeopleIn] = useState(0);
+    const [peopleOut, setPeopleOut] = useState(0);
     const [serverConnected, setServerConnected] = useState(false);
     const [camIsOn, setCamIsOn] = useState(false);
 
@@ -29,8 +31,11 @@ const Dashboard = () => {
         axios
             .get(LATEST_MEASUREMENTS)
             .then((res) => {
-                let { celcius, moisture, humidity } = res.data[0].celcius;
+                let celcius = res.data[0].celcius;
+                let moisture = res.data[0].moisture;
+                let humidity = res.data[0].humidity;
 
+                console.log(res.data[0])
                 // condition checks before setting measurements
                 if (parseFloat(celcius) !== 0) {
                     setMeasurements((prev) => ({
@@ -69,9 +74,17 @@ const Dashboard = () => {
         axios
             .get(ALL_ENTRY)
             .then((res) => {
-                let { entry_number } = parseInt(res.data[0]);
+                let entry_number = parseInt(res.data[0].entry_number);
+                let in_number = parseInt(res.data[0].current_in);
+                let out_number = parseInt(res.data[0].current_out);
+
                 if (parseInt(entry_number) < 0) entry_number = 0;
+                if (parseInt(in_number) < 0) in_number = 0;
+                if (parseInt(out_number) < 0) out_number = 0;
+
                 setPeopleNum(entry_number);
+                setPeopleIn(in_number);
+                setPeopleOut(out_number);
             })
             .catch((e) => {
                 setServerConnected(false);
@@ -82,12 +95,15 @@ const Dashboard = () => {
     const fetchLatestMessage = () => {
         axios
             .get(LATEST_MESSAGE)
-            .then((res) => {
-                let { content } = res.data[0];
-                if (content === 'QR Scan is done') {
-                    // update QR scan camera
-                } else if (content === 'QR Check!') {
-                    // update QR scan camera
+            .then((res) => { 
+                if (res.data[0] != undefined) {
+                    let content = res.data[0].content;
+                    console.log(content)
+                    if (content === 'QR Scan is done') {
+                        // update QR scan camera
+                    } else if (content === 'QR Check!') {
+                        // update QR scan camera
+                    }
                 }
             })
             .catch((e) => {
@@ -123,7 +139,7 @@ const Dashboard = () => {
         <div className={DashboardCSS.container}>
             <h2>Server status: {serverConnected ? 'connected' : 'connecting...'}</h2>
             {/* <h2>Measurements</h2> */}
-            <InfoPanel measurements={measurements} peopleNum={peopleNum} />
+            <InfoPanel measurements={measurements} peopleNum={peopleNum} peopleIn={peopleIn} peopleOut={peopleOut} />
 
             {/* for testing only */}
             <div>
