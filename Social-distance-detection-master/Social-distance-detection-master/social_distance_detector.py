@@ -27,15 +27,20 @@ COLOR_GREEN = (0, 255, 0)
 COLOR_BLUE = (255, 0, 0)
 BIG_CIRCLE = 60
 SMALL_CIRCLE = 3
-frame = None
 
+######################################### 
+#     TODO: Triet	#
+#########################################
 # Flask App 1 For Human Detection
 app = Flask(__name__)
+frame = None
 app.config['SECRET_KEY'] = 'dreamchaser'
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 socketio = SocketIO(app, cors_allowed_origins="*")
-
+######################################### 
+#     TODO: Triet	#
+#########################################
 
 def get_centroids_and_groundpoints(array_boxes_detected, centroids):
 	"""
@@ -102,7 +107,6 @@ ap.add_argument("-v", "--variation", type=str,default="v4",
 	help="which kind of YoloV3 variation to be used")
 args = vars(ap.parse_args())
 
-
 #TODO: NAM
 ######################################### 
 # Load the config for the top-down view #
@@ -117,6 +121,10 @@ for section in cfg:
 	corner_points.append(cfg["image_parameters"]["p2"])
 	corner_points.append(cfg["image_parameters"]["p4"])
 	corner_points.append(cfg["image_parameters"]["p3"])
+	##### NEW
+	point_1 = cfg["image_parameters"]["p5"]
+	point_2 = cfg["image_parameters"]["p6"]
+	##### NEW
 	width_og = int(cfg["image_parameters"]["width_og"])
 	height_og = int(cfg["image_parameters"]["height_og"])
 	img_path = cfg["image_parameters"]["img_path"]
@@ -197,9 +205,15 @@ height = blank_image.shape[0]
 width = blank_image.shape[1] 
 dim = (width, height)
 
+d_point_1 = compute_point_perspective_transformation(matrix,point_1)
+d_point_2 = compute_point_perspective_transformation(matrix,point_2)
+print(d_point_1, d_point_2)
+min_dis = int(dist.euclidean(d_point_1, d_point_2))
+print('Distance in pixels: '+ str(min_dis))
+
 # initialize the video stream and pointer to output video file
 print("[INFO] accessing video stream...")
-vs = cv2.VideoCapture('pedestrians.mp4')
+vs = cv2.VideoCapture(0)
 #vs = cv2.VideoCapture("PETS2009.avi")
 #vs = cv2.VideoCapture(0)
 
@@ -217,6 +231,9 @@ crowd_frame_counter = 0
 
 ######################################### 
 #     FRAME TASKs	#
+#########################################
+######################################### 
+#     TODO: Triet	#
 #########################################
 def stream():
 	global prev_frame_time
@@ -278,14 +295,15 @@ def stream():
 						# centroid pairs is less than the configured number
 						# of pixels
 
-						if D[i, j] < config.MIN_CROWD_DISTANCE:
+						if D[i, j] < min_dis+20:
 							# update our violation set with the indexes of
 							# the centroid pairs
 							l = [i,j]
 							possible_crowd.add(tuple(l))
-							if D[i, j] < config.MIN_DISTANCE:
+							if D[i, j] < min_dis:
 								distance_violate.add(i)
 								distance_violate.add(j)
+
 
 				
 			if len(possible_crowd) > 0:
@@ -445,3 +463,7 @@ if __name__ == '__main__':
 	t = threading.Thread(target=stream)
 	t.daemon = True
 	t.start()
+
+######################################### 
+#     TODO: Triet	#
+#########################################

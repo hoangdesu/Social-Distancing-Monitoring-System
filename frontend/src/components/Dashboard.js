@@ -10,7 +10,7 @@ import Col from 'react-bootstrap/Col'
 
 // API ENDPOINTS
 const LATEST_MEASUREMENTS = 'http://localhost:7000/measurements/latest/';
-const VIDEO_FEED = 'http://192.168.137.5:5000/video_feed';
+const VIDEO_FEED = 'http://192.168.137.5:4200/video_feed';
 const ALL_ENTRY = 'http://localhost:7000/entry/latest';
 const LATEST_MESSAGE = 'http://localhost:7000/message/latest';
 const UPDATE_INTERVAL = 1000 * 3; // 2s
@@ -99,18 +99,20 @@ const Dashboard = () => {
         axios
             .get(LATEST_MESSAGE)
             .then((res) => { 
-                if (res.data[0] != undefined) {
-                    let content = res.data[0].content;
-                    console.log(content)
+                if (res.data[0] !== undefined) {
+                    let content = res.data[0].content
                     if (content === 'QR Scan is done') {
                         setCamIsOn(false)
                     } else if (content === 'QR Check!') {
                         setCamIsOn(true)
                     }
-                    else
+                    else if (content !== 'QR Check!' && content !== 'QR Scan is done') {
                         setMessage(content)
                         setCamIsOn(false)
+                    }
                 }
+                console.log(message)
+                console.log(camIsOn)
             })
             .catch((e) => {
                 console.log('Error fetching latest message -', e);
@@ -155,14 +157,21 @@ const Dashboard = () => {
             <div className={DashboardCSS['fourth-row']}>
                 <div
                     className={`${DashboardCSS['card']} ${DashboardCSS['medium-element']}`}
-                    style={{paddingLeft: 600}}
                 >
                     <h2>Message: {message}</h2>
                     <br/>
                     <h4>{camIsOn == true ? 'QR is Reading' : 'QR Reader is on IDLE Mode'}</h4>
-                    <img src={ camIsOn == true ? VIDEO_FEED : nocamera} alt="QR_Camera" style={{height: 400}} />
+                    <img src={VIDEO_FEED} alt="QR_Camera" style={{height: 400}} /> 
                 </div>
-              
+            </div>
+            <div className={DashboardCSS['fith-row']}>
+                <div style={{ margin: 20 }}>
+                <h1 style={{ paddingLeft: 20 }}>Room Camera and Bird Eye View</h1> 
+                </div>
+                
+                <div style={{ border: '1px solid red'}}>
+                    <img src="http://localhost:9099/video_feed" alt="video_feed" />
+                </div>
             </div>
             {/* for testing only
             <div>

@@ -37,7 +37,7 @@ def detect_people(frame, net, ln, personIdx=0):
 			# filter detections by (1) ensuring that the object
 			# detected was a person and (2) that the minimum
 			# confidence is met
-			if classID == personIdx and confidence > 0.6:
+			if classID == personIdx and confidence > MIN_CONF:
 				# scale the bounding box coordinates back relative to
 				# the size of the image, keeping in mind that YOLO
 				# actually returns the center (x, y)-coordinates of
