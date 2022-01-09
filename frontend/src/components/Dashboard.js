@@ -2,18 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import DashboardCSS from './Dashboard.module.css';
-import nocamera from './../assets/nocam.png'
 import InfoPanel from './InfoPanel';
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
 
 // API ENDPOINTS
 const LATEST_MEASUREMENTS = 'http://localhost:7000/measurements/latest/';
-const VIDEO_FEED = 'http://192.168.137.5:4200/video_feed';
+const QR_VIDEO_FEED = 'http://192.168.137.5:5000/video_feed';
+const CAMERA_VIDEO_FEED = 'http://192.168.137.27:9099/video_feed';
 const ALL_ENTRY = 'http://localhost:7000/entry/latest';
 const LATEST_MESSAGE = 'http://localhost:7000/message/latest';
-const UPDATE_INTERVAL = 1000 * 3; // 2s
+const UPDATE_INTERVAL = 1000 * 0.5; // 2s
 
 const Dashboard = () => {
     // --- STATES ---
@@ -101,15 +98,18 @@ const Dashboard = () => {
             .then((res) => { 
                 if (res.data[0] !== undefined) {
                     let content = res.data[0].content
+                    if (content === 'Program Start') {
+                        setServerConnected(true)
+                    }
                     if (content === 'QR Scan is done') {
                         setCamIsOn(false)
                     } else if (content === 'QR Check!') {
                         setCamIsOn(true)
                     }
                     else if (content !== 'QR Check!' && content !== 'QR Scan is done') {
-                        setMessage(content)
                         setCamIsOn(false)
                     }
+                    setMessage(content)
                 }
                 console.log(message)
                 console.log(camIsOn)
@@ -146,33 +146,22 @@ const Dashboard = () => {
     return (
         <div className={DashboardCSS.container}>
             <div className={DashboardCSS['first-row']}>
-                <h2>Server status: {serverConnected ? 'connected' : 'connecting...'}</h2>
+                <h2>Raspberry Pi Program Status: {serverConnected ? 'connected' : 'connecting...'}</h2>
             </div>
             <div className={DashboardCSS['second-row']}>
                 <InfoPanel measurements={measurements} peopleNum={peopleNum} peopleIn={peopleIn} peopleOut={peopleOut} />
             </div>
-            <div className={DashboardCSS['third-row']}>
-                <h2>Camera and Messages</h2>
-            </div>
-            <div className={DashboardCSS['fourth-row']}>
+            <div>
                 <div
-                    className={`${DashboardCSS['card']} ${DashboardCSS['medium-element']}`}
+                    className={`${DashboardCSS['card']}`}
                 >
                     <h2>Message: {message}</h2>
-                    <br/>
-                    <h4>{camIsOn == true ? 'QR is Reading' : 'QR Reader is on IDLE Mode'}</h4>
-                    <img src={VIDEO_FEED} alt="QR_Camera" style={{height: 400}} /> 
+                    <h2 style={{paddingLeft: 1100}}>{camIsOn === true ? 'QR is Reading' : 'QR Reader is on IDLE Mode'}</h2>
+                    <img src={CAMERA_VIDEO_FEED} style={{height: 445, paddingRight: 20}}alt="camera video feed" />
+                    <img src={QR_VIDEO_FEED} alt="qr camera video feed" style={{height: 445}} /> 
                 </div>
             </div>
-            <div className={DashboardCSS['fith-row']}>
-                <div style={{ margin: 20 }}>
-                <h1 style={{ paddingLeft: 20 }}>Room Camera and Bird Eye View</h1> 
-                </div>
-                
-                <div style={{ border: '1px solid red'}}>
-                    <img src="http://localhost:9099/video_feed" alt="video_feed" />
-                </div>
-            </div>
+            
             {/* for testing only
             <div>
                 <button onClick={() => changePpl('remove')}>Remove</button>

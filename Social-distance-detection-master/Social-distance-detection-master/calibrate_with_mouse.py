@@ -14,7 +14,7 @@ def CallBackFunc(event, x, y, flags, param):
         cv2.circle(img, (x, y), 5, (0, 255, 255), 5)
         ### NEW
 
-video_name = 0
+video_name = "PETS2009.avi"
 
 size_frame = 600
 

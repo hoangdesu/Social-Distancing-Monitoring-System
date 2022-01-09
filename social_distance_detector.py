@@ -28,12 +28,19 @@ COLOR_BLUE = (255, 0, 0)
 BIG_CIRCLE = 60
 SMALL_CIRCLE = 3
 
+######################################### 
+#     TODO: Triet	#
+#########################################
+# Flask App 1 For Human Detection
 app = Flask(__name__)
 frame = None
 app.config['SECRET_KEY'] = 'dreamchaser'
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 socketio = SocketIO(app, cors_allowed_origins="*")
+######################################### 
+#     TODO: Triet	#
+#########################################
 
 def get_centroids_and_groundpoints(array_boxes_detected, centroids):
 	"""
@@ -47,6 +54,11 @@ def get_centroids_and_groundpoints(array_boxes_detected, centroids):
 		ground_point = get_points_from_box(box, centroids[index])
 		array_groundpoints.append(ground_point)
 	return array_groundpoints
+	# (startX, startY, endX, endY) = box
+	# (center_x, center_y) = centroid
+	# # Coordiniate on the point at the bottom center of the box
+	# center_y_ground = center_y + ((endY - startY)/2)
+	# return (center_x,center_y),(center_x,int(center_y_ground))
 
 def get_points_from_box(box, centroid ):
 	"""
@@ -68,8 +80,6 @@ def draw_rectangle(corner_points):
 	cv2.line(frame, (corner_points[1][0], corner_points[1][1]), (corner_points[3][0], corner_points[3][1]), COLOR_BLUE, thickness=1)
 	cv2.line(frame, (corner_points[0][0], corner_points[0][1]), (corner_points[2][0], corner_points[2][1]), COLOR_BLUE, thickness=1)
 	cv2.line(frame, (corner_points[3][0], corner_points[3][1]), (corner_points[2][0], corner_points[2][1]), COLOR_BLUE, thickness=1)
-
-
 
 def bfs(graph, node): #function for BFS
 	visited = [] # List for visited nodes.
@@ -97,7 +107,7 @@ ap.add_argument("-v", "--variation", type=str,default="v4",
 	help="which kind of YoloV3 variation to be used")
 args = vars(ap.parse_args())
 
-
+#TODO: NAM
 ######################################### 
 # Load the config for the top-down view #
 #########################################
@@ -181,7 +191,9 @@ if config.USE_GPU:
 # ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
 ln = net.getUnconnectedOutLayersNames()  
-66
+
+
+
 ######################################### 
 #     Compute transformation matrix		#
 #########################################
@@ -193,17 +205,18 @@ height = blank_image.shape[0]
 width = blank_image.shape[1] 
 dim = (width, height)
 
-d_point_1 = compute_point_perspective_transformation(matrix,point_1).pop()
-d_point_2 = compute_point_perspective_transformation(matrix,point_2).pop()
+d_point_1 = compute_point_perspective_transformation(matrix,point_1)
+d_point_2 = compute_point_perspective_transformation(matrix,point_2)
 print(d_point_1, d_point_2)
 min_dis = int(dist.euclidean(d_point_1, d_point_2))
-min_crown_dis = (2 * min_dis)/1.5
 print('Distance in pixels: '+ str(min_dis))
-print('Crowd Distance in pixels: '+ str(min_crown_dis))
+
 # initialize the video stream and pointer to output video file
 print("[INFO] accessing video stream...")
-# vs = cv2.VideoCapture('people1.mp4')
-vs = cv2.VideoCapture("PETS2009.avi")
+vs = cv2.VideoCapture(0)
+#vs = cv2.VideoCapture("PETS2009.avi")
+#vs = cv2.VideoCapture(0)
+
 
 # used to record the time when we processed last frame
 prev_frame_time = 0
@@ -215,14 +228,18 @@ new_frame_time = 0
 writer = None
 
 crowd_frame_counter = 0
+
 ######################################### 
 #     FRAME TASKs	#
 #########################################
-# loop over the frames from the video stream
+######################################### 
+#     TODO: Triet	#
+#########################################
 def stream():
 	global prev_frame_time
 	global writer
 	global crowd_frame_counter
+	# loop over the frames from the video stream
 	while True:
 		bird_view_img = cv2.resize(blank_image, dim, interpolation = cv2.INTER_AREA)
 
@@ -244,11 +261,18 @@ def stream():
 			if len(results) > 0:
 				centroids = np.array([r[2] for r in results])
 				array_boxes_detected = np.array([r[1] for r in results])
-			
+				# d_list = []
+				# Transform bounding boxes from YOLO to downoids point on the calibrated view
+				# for (i, (prob, bbox, centroid)) in enumerate(results):
+					# extract the bounding box and centroid coordinates, then
+					# initialize the color of the annotation
+
 				# Both of our lists that will contain the centroïds coordonates and the ground points
 				array_groundpoints = get_centroids_and_groundpoints(array_boxes_detected, centroids)
+				# print(array_groundpoints)
+				# Use the transform matrix to get the transformed coordinates
 				d_list = compute_point_perspective_transformation(matrix,array_groundpoints)
-		
+				# d_list.append(transformed_downoids)
 
 			# initialize the set of indexes that violate the minimum social
 			# distance
@@ -263,6 +287,7 @@ def stream():
 			# order to compute our pairwise distance maps)
 			if len(d_list) >= 2:
 				D = dist.cdist(d_list, d_list, metric="euclidean")
+				# print(D)
 				# loop over the upper triangular of the distance matrix
 				for i in range(0, D.shape[0]):
 					for j in range(i + 1, D.shape[1]):
@@ -270,7 +295,7 @@ def stream():
 						# centroid pairs is less than the configured number
 						# of pixels
 
-						if D[i, j] <min_crown_dis:
+						if D[i, j] < min_dis+20:
 							# update our violation set with the indexes of
 							# the centroid pairs
 							l = [i,j]
@@ -279,6 +304,20 @@ def stream():
 								distance_violate.add(i)
 								distance_violate.add(j)
 
+
+				
+			if len(possible_crowd) > 0:
+				for i,pair in enumerate(itertools.combinations(possible_crowd, r=2)):
+					set_0 = set(pair[0])
+					set_1 = set(pair[1])
+					inter = set_0.intersection(set_1)
+					if (len(inter) > 0):
+						difference0_1 = (set_0 - set_1).pop()
+						difference1_0 = (set_1 - set_0).pop()
+						crowd[inter.pop()] = [difference0_1,difference1_0]
+						crowd_frame_counter += 1
+					
+			
 			# # loop over the results
 			for (i, (prob, bbox, centroid)) in enumerate(results):
 				# extract the bounding box and centroid coordinates, then
@@ -295,116 +334,80 @@ def stream():
 
 				# draw (1) a bounding box around the person and (2) the
 				# centroid coordinates of the person,
-				cv2.rectangle(frame, (startX, startY), (endX, endY), color, 1)
+				cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
 				cv2.circle(frame, (cX, cY), 5, color, 1)
 
 				point = d_list[i]
 				x,y = point
 				cv2.circle(bird_view_img, (int(x),int(y)), 5, color, -1)
 
-			visited = []
-			# List for visited nodes.
+				
+			visited = [] # List for visited nodes.
 			queue = [] # init a queue
-			if len(possible_crowd) > 1:
-				for i,pair in enumerate(itertools.combinations(possible_crowd, r=2)):
-					set_0 = set(pair[0])
-					set_1 = set(pair[1])
-					inter = set_0.intersection(set_1)
-					if (len(inter) > 0):
-						difference0_1 = (set_0 - set_1).pop()
-						difference1_0 = (set_1 - set_0).pop()
-						crowd[inter.pop()] = [difference0_1,difference1_0]
-						crowd_frame_counter += 1
-			
-				# Traversing the crowd graph to draw the conenction between them 
-				if len(crowd) > 0:
-					centroids = np.array([r[2] for r in results]) 
-					first_node = next(iter(crowd))
-					
-					visited.append(first_node)
-					queue.append(first_node)
-					while queue:          # Creating loop to visit each node
-						m = queue.pop(0) 
-						startX, startY = d_list[m]
-						startX_frame, startY_frame = centroids[m]
-						if m in crowd:
-							for neighbour in crowd[m]:
-								endX, endY = d_list[neighbour]
-								endX_frame, endY_frame = centroids[neighbour]
-								line_color = (255, 128, 0)
-								cv2.line(bird_view_img,(int(startX),int(startY)), (int(endX),int(endY)), line_color, 2 )
-								cv2.line(frame,(int(startX_frame),int(startY_frame)), (int(endX_frame),int(endY_frame)), line_color, 2 )
-								if neighbour not in visited:
-									visited.append(neighbour)
-									queue.append(neighbour)
-				else:
-					crowd_frame_counter = 0
+			# Traversing the crowd graph to draw the conenction between them 
+			if len(crowd) > 0:
+				centroids = np.array([r[2] for r in results]) 
+				first_node = next(iter(crowd))
+				visited.append(first_node)
+				queue.append(first_node)
+				while queue:          # Creating loop to visit each node
+					m = queue.pop(0) 
+					startX, startY = d_list[m]
+					startX_frame, startY_frame = centroids[m]
+					if m in crowd:
+						for neighbour in crowd[m]:
+							endX, endY = d_list[neighbour]
+							endX_frame, endY_frame = centroids[neighbour]
+							line_color = (255, 128, 0)
+							cv2.line(bird_view_img,(int(startX),int(startY)), (int(endX),int(endY)), line_color, 2 )
+							cv2.line(frame,(int(startX_frame),int(startY_frame)), (int(endX_frame),int(endY_frame)), line_color, 2 )
+							if neighbour not in visited:
+								visited.append(neighbour)
+								queue.append(neighbour)
+			else:
+				crowd_frame_counter = 0
 					
 			
-				# When the crowd still persist for 20 frame (1 second)
-				if crowd_frame_counter > 15:
-					crowd_bool = True
-					crowd_frame_counter = 0
+			# When the crowd still persist for 20 frame (1 second)
+			if crowd_frame_counter > 5:
+				crowd_bool = True
+				crowd_frame_counter = 0
 			
-
-			# # time when we finish processing for this frame
-			# new_frame_time = time.time()
-			# # fps will be number of frame processed in given time frame
-			# # since their will be most of time error of 0.001 second
-			# # we will be subtracting it to get more accurate result
-			# fps = 1/(new_frame_time-prev_frame_time)
-			# prev_frame_time = new_frame_time
-		
-			# converting the fps into integer
-			# fps = int(fps)
-			# fps = str(fps)
 
 			# time when we finish processing for this frame
 			new_frame_time = time.time()
-
 			# fps will be number of frame processed in given time frame
 			# since their will be most of time error of 0.001 second
 			# we will be subtracting it to get more accurate result
-			fps = int(1/(new_frame_time-prev_frame_time))
+			fps = 1/(new_frame_time-prev_frame_time)
 			prev_frame_time = new_frame_time
+		
+			# converting the fps into integer
+			fps = int(fps)
+			fps = str(fps)
 
-			# if fileWritable is True:
-			# 	file = open(filename,"a") 
-			# 	file.write(fps)
-			# 	file.write("\n")
-			# 	file.close()
+			if fileWritable is True:
+				file = open(filename,"a") 
+				file.write(fps)
+				file.write("\n")
+				file.close()
 			# converting the fps to string so that we can display it on frame
 			# by using putText function
 			
-			noti_height = 150
-			noti_panel = np.zeros((noti_height,width*2,3), np.uint8)
-
-			cv2.putText(noti_panel, 'Title: Social Distancing Monitor and Crowd Detection', (7, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, COLOR_RED, 2, cv2.LINE_AA)
-
+		
 			# putting the FPS count on the frame
-			cv2.putText(noti_panel, 'FPS: '+ str(fps), (width*2 - 100, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, COLOR_BLUE, 2, cv2.LINE_AA)
+			cv2.putText(frame, fps, (7, 70), cv2.FONT_HERSHEY_SIMPLEX, 3, (100, 255, 0), 3, cv2.LINE_AA)
 
 			# draw the total number of social distancing violations on the
 			# output frame
 			text = "Social Distancing Violations: {}".format(len(distance_violate))
-			cv2.putText(noti_panel, text, (10, noti_panel.shape[0] - 50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, COLOR_RED, 2)
+			cv2.putText(frame, text, (10, frame.shape[0] - 25),
+				cv2.FONT_HERSHEY_SIMPLEX, 0.85, (0, 0, 255), 3)
 
 			# Show if there's crowd gather 
-			text = "Crowd People Possibility: {}".format(len(visited))
-			cv2.putText(noti_panel, text, (10, noti_panel.shape[0] - 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, COLOR_RED, 2)
-
-		# check to see if the output frame should be displayed to our
-		# screen
-		if args["display"] > 0:
-			# Draw the green rectangle to delimitate the detection zone
-			draw_rectangle(corner_points)
-			# Show both images	
-			cv2.imshow("Frame", frame)
-			cv2.moveWindow("Frame", 40,60)
-			cv2.imshow("Bird View", bird_view_img)
-			cv2.moveWindow("Bird View", width+40,60)
-			cv2.imshow("Notification Panel", noti_panel)
-			cv2.moveWindow("Notification Panel",40,height+90)
+			text = "People in possible crowd: {}".format(len(visited))
+			cv2.putText(frame, text, (10, frame.shape[0] - 50),
+				cv2.FONT_HERSHEY_SIMPLEX, 0.85, (0, 0, 255), 3)
 
 		# check to see if the output frame should be displayed to our
 		# screen
@@ -415,7 +418,6 @@ def stream():
 			cv2.imshow("Bird view", bird_view_img)
 			# show the output frame
 			cv2.imshow("Frame", frame)
-			cv2.imshow("Notification Panel", noti_panel)
 
 			h,w,c = frame.shape
 			h1,w1,c1 = bird_view_img.shape
@@ -423,9 +425,8 @@ def stream():
 			if h != h1 or w != w1: # resize right img to left size
 				bird_view_img = cv2.resize(bird_view_img,(w,h))
 				
-			his = np.concatenate((frame, bird_view_img), axis=1)
-			vis = np.concatenate((his, noti_panel), axis=0)
-			key = cv2.waitKey(1) & 0xFF	
+			vis = np.concatenate((frame, bird_view_img), axis=1)
+			key = cv2.waitKey(1) & 0xFF
 
 			(flag, encodedImage) = cv2.imencode(".jpg", vis)
 			yield(b'--vis\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')
@@ -461,3 +462,7 @@ if __name__ == '__main__':
 	t = threading.Thread(target=stream)
 	t.daemon = True
 	t.start()
+
+######################################### 
+#     TODO: Triet	#
+#########################################
